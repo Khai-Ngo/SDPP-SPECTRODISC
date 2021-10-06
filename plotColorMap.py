@@ -3,9 +3,9 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 from matplotlib.colors import Normalize 
 from scipy.interpolate import interpn
-inputDir = r'E:\CLYC gamma calib\Analysis results\co-60-960'
+import sys
+
 outputDirectory = r'E:\CLYC gamma calib\Analysis results\co-60-960'
-filename = inputDir + '\PH_PSD-80-20delay-500-Co60-960V.txt'
 
 def twoDdataSelector (x, y, xlow = 0, xhigh = np.inf, ylow = 0, yhigh = np.inf, numPoint = np.inf):
     xret = []
@@ -78,18 +78,22 @@ def density_scatter( x , y, ax = None, xlow = 0, xhigh = 16000, ylow = 1, yhigh 
     ax.set_ylabel(ylabel)
     plt.show()
     return ax
-if __name__ == '__main__':
-    x = []
-    y= []
+def readExport (filepath):
     with open(filename) as f:
+        x = []
+        y= []
         lines = f.readlines()[1:]
         for line in lines:
             tmp = line.split()[0]
             if tmp != 'nan':
                 x.append(float(tmp))
                 y.append(float(line.split()[1]))
-    x = np.array(x)
-    y = np.array(y)
-    density_scatter(x, y, xlow = 10000, xhigh = 50000, ylow = 0.5, yhigh = 1, bins = [1000,1000], xlabel = 'Pulse area', ylabel = 'PSD')
+        x = np.array(x)
+        y = np.array(y)
+        return x, y
+        
+if __name__ == '__main__':
+    x, y = readExport (sys.argv[1])
+    density_scatter(x, y, xlow = sys.argv[2], xhigh = sys.argv[3], ylow = sys.argv[4], yhigh = sys.argv[5], bins = [1000,1000], xlabel = 'Pulse area', ylabel = 'PSD')
     #buildHist(y, minVal = 1.8, maxVal = 2.4, noOfBins = 500, filename = "Rspec Co-60-960V 400-1500ns") 
 
