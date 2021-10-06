@@ -79,7 +79,7 @@ def density_scatter( x , y, ax = None, xlow = 0, xhigh = 16000, ylow = 1, yhigh 
     plt.show()
     return ax
 def readExport (filepath):
-    with open(filename) as f:
+    with open(filepath) as f:
         x = []
         y= []
         lines = f.readlines()[1:]
@@ -93,7 +93,12 @@ def readExport (filepath):
         return x, y
         
 if __name__ == '__main__':
-    x, y = readExport (sys.argv[1])
-    density_scatter(x, y, xlow = sys.argv[2], xhigh = sys.argv[3], ylow = sys.argv[4], yhigh = sys.argv[5], bins = [1000,1000], xlabel = 'Pulse area', ylabel = 'PSD')
+    x, y = readExport(sys.argv[1])
+    xlow = float(sys.argv[2])
+    xhigh = float(sys.argv[3])
+    ylow = float(sys.argv[4])
+    yhigh = float(sys.argv[5])
+    xprime, yprime = twoDdataSelector (x, y, xlow = xlow, xhigh = xhigh, ylow = ylow, yhigh = yhigh)
+    density_scatter(xprime, yprime, xlow = xlow, xhigh = xhigh, ylow = ylow, yhigh = yhigh, bins = [1000,1000], xlabel = 'Pulse area', ylabel = 'PSD')
     #buildHist(y, minVal = 1.8, maxVal = 2.4, noOfBins = 500, filename = "Rspec Co-60-960V 400-1500ns") 
 
