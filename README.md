@@ -1,1 +1,0 @@
-# Scintillator-analysis
