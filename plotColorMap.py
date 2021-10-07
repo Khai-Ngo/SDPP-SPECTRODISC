@@ -5,8 +5,6 @@ from matplotlib.colors import Normalize
 from scipy.interpolate import interpn
 import sys
 
-outputDirectory = r'E:\CLYC gamma calib\Analysis results\co-60-960'
-
 def twoDdataSelector (x, y, xlow = 0, xhigh = np.inf, ylow = 0, yhigh = np.inf, numPoint = np.inf):
     xret = []
     yret = []
@@ -91,7 +89,16 @@ def readExport (filepath):
         x = np.array(x)
         y = np.array(y)
         return x, y
-        
+def plotParamsRead():
+    with open("plotParams.par") as f:
+        lines = [line.strip("\n") for line in f.readlines() if not line.startswith('#')]
+        inputPath = lines[0].split()[1]
+        outputPath = lines[1].split()[1]
+        minPH = float(lines[2].split()[1])
+        maxPH = float(lines[3].split()[1])
+        minr = float(lines[4].split()[1])
+        maxr = float(lines[5].split()[1])
+        return inputPath, outputPath, minPH, maxPH, minr, maxr
 if __name__ == '__main__':
     x, y = readExport(sys.argv[1])
     xlow = float(sys.argv[2])
@@ -100,5 +107,4 @@ if __name__ == '__main__':
     yhigh = float(sys.argv[5])
     xprime, yprime = twoDdataSelector (x, y, xlow = xlow, xhigh = xhigh, ylow = ylow, yhigh = yhigh)
     density_scatter(xprime, yprime, xlow = xlow, xhigh = xhigh, ylow = ylow, yhigh = yhigh, bins = [1000,1000], xlabel = 'Pulse area', ylabel = 'PSD')
-    #buildHist(y, minVal = 1.8, maxVal = 2.4, noOfBins = 500, filename = "Rspec Co-60-960V 400-1500ns") 
-
+    
