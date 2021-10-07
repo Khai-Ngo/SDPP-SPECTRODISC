@@ -1,0 +1,11 @@
+# input parameter for plotColorMap.py and plotPHS.py
+Input-path: <full-path-here>
+Output-path: <full-path-here>
+minPH: <float>
+maxPH: <float>
+minr: <float>
+# For plotColorMap.py only:
+maxr: <float>
+# For plotPHS.py only:
+autobinning = FALSE
+binWidth = <float>
