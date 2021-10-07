@@ -92,11 +92,11 @@ def readExport (filepath):
 if __name__ == '__main__':
     x, y = readExport(sys.argv[1])
     rCut = float(sys.argv[3])
-    xlow = float(sys.argv[4])
+    binWidth = float(sys.argv[4])
     xhigh = float(sys.argv[5])
-    noOfBins = int(sys.argv[6])
+    noOfBins = int(xhigh/binWidth)
     LO = (0.627*x - 41)/1000
-    LO, yprime = twoDdataSelector (LO, y, xlow = xlow, xhigh = xhigh, ylow = rCut)
-    buildHist(LO, sys.argv[2], minVal = xlow, maxVal = xhigh, noOfBins = noOfBins, auto = False, plot = True, save = True)
+    LO, yprime = twoDdataSelector (LO, y, xlow = 0, xhigh = xhigh, ylow = rCut)
+    buildHist(LO, sys.argv[2], minVal = 0, maxVal = xhigh, noOfBins = noOfBins, auto = False, plot = True, save = True)
     
 
