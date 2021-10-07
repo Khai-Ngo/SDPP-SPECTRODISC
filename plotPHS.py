@@ -88,7 +88,17 @@ def readExport (filepath):
         x = np.array(x)
         y = np.array(y)
         return x, y
-        
+def plotParamsRead():
+    with open("plotParams.par") as f:
+        lines = [line.strip("\n") for line in f.readlines() if not line.startswith('#')]
+        inputPath = lines[0].split("=")[1].strip(" ")
+        outputPath = lines[1].split("=")[1].strip(" ")
+        minPH = float(lines[2].split("=")[1].strip(" "))
+        maxPH = float(lines[3].split("=")[1].strip(" "))
+        minr = float(lines[4].split("=")[1].strip(" "))
+        autoflag = lines[6].split("=")[1].strip(" ")
+        binWidth = float(lines[7].split("=")[1].strip(" "))
+        return inputPath, outputPath, minPH, maxPH, minr, autoflag, binWidth  
 if __name__ == '__main__':
     x, y = readExport(sys.argv[1])
     rCut = float(sys.argv[3])
@@ -98,5 +108,5 @@ if __name__ == '__main__':
     LO = (0.627*x - 41)/1000
     LO, yprime = twoDdataSelector (LO, y, xlow = 0, xhigh = xhigh, ylow = rCut)
     buildHist(LO, sys.argv[2], minVal = 0, maxVal = xhigh, noOfBins = noOfBins, auto = False, plot = True, save = True)
-    
+
 
