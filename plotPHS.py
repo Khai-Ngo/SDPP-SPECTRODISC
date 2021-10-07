@@ -100,13 +100,11 @@ def plotParamsRead():
         binWidth = float(lines[7].split("=")[1].strip(" "))
         return inputPath, outputPath, minPH, maxPH, minr, autoflag, binWidth  
 if __name__ == '__main__':
-    x, y = readExport(sys.argv[1])
-    rCut = float(sys.argv[3])
-    binWidth = float(sys.argv[4])
-    xhigh = float(sys.argv[5])
-    noOfBins = int(xhigh/binWidth)
+    inputPath, outputPath, minPH, maxPH, minr, autoflag, binWidth  = plotParamsRead()
+    x, y = readExport(inputPath)
+    noOfBins = int(maxPH/binWidth)
     LO = (0.627*x - 41)/1000
-    LO, yprime = twoDdataSelector (LO, y, xlow = 0, xhigh = xhigh, ylow = rCut)
-    buildHist(LO, sys.argv[2], minVal = 0, maxVal = xhigh, noOfBins = noOfBins, auto = False, plot = True, save = True)
+    LO, yprime = twoDdataSelector (LO, y, xlow = minPH, xhigh = maxPH, ylow = minr)
+    buildHist(LO, outputPath, minVal = minPH, maxVal = maxPH, noOfBins = noOfBins, auto = False, plot = True, save = True)
 
 
