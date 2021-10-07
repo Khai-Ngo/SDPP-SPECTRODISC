@@ -95,7 +95,8 @@ if __name__ == '__main__':
     xlow = float(sys.argv[4])
     xhigh = float(sys.argv[5])
     noOfBins = int(sys.argv[6])
-    xprime, yprime = twoDdataSelector (x, y, xlow = xlow, xhigh = xhigh, ylow = rCut)
-    buildHist(xprime, sys.argv[2], minVal = xlow, maxVal = xhigh, noOfBins = noOfBins, auto = False, plot = True, save = True)
+    LO = (0.627*x - 41)/1000
+    LO, yprime = twoDdataSelector (LO, y, xlow = xlow, xhigh = xhigh, ylow = rCut)
+    buildHist(LO, sys.argv[2], minVal = xlow, maxVal = xhigh, noOfBins = noOfBins, auto = False, plot = True, save = True)
     
 
