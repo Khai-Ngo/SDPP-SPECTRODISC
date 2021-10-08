@@ -20,35 +20,6 @@ def twoDdataSelector (x, y, xlow = 0, xhigh = np.inf, ylow = 0, yhigh = np.inf, 
     xret = np.array(xret)
     yret = np.array(yret)
     return xret, yret
-def oneDdataSelector (x, xlow = 0, xhigh = np.inf, numPoint = np.inf):
-    xret = []
-    count = 0
-    for i in range(len(x)):
-        if x[i] <= xhigh and x[i] >= xlow:
-            xret.append(x[i])
-            count += 1
-        if count > numPoint:
-            break
-    xret = np.array(xret)
-    return xret 
-# write PAS to file
-def buildHist(arr, filename, minVal, maxVal, noOfBins, auto = False, plot = False, save = True):
-    print("Building histogram...")
-    if auto:
-        PAS, bin_edges = np.histogram(arr, bins = 'auto') # auto-binning is used
-    else:
-        PAS, bin_edges = np.histogram(arr, bins = noOfBins, range = (minVal, maxVal))
-    if save:
-        fileDestination = outputDirectory + "\\"+filename+ ".txt"
-        f = open (fileDestination, 'w')
-        f.write('Value\tCounts\n')
-        for i in range(len(PAS)):
-            f.write('%s\t%s\n'%(bin_edges[i], PAS[i]))
-        f.close()
-        print("Wrote histogram succesffully to " + fileDestination+"\n")
-    if plot:
-        plt.plot(bin_edges[:len(PAS)], PAS)
-        plt.show()
 def density_scatter( x , y, ax = None, xlow = 0, xhigh = 16000, ylow = 1, yhigh = 1.5, sort = True, bins = 20, xlabel = 'x', ylabel = 'y', limFlag = True, **kwargs )   :
     """
     Scatter plot colored by 2d histogram
