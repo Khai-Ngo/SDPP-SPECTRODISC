@@ -53,14 +53,14 @@ def readExport (filepath):
 def plotParamsRead():
     with open("plotParams.par") as f:
         lines = [line.strip("\n") for line in f.readlines() if not line.startswith('#')]
-        inputPath = lines[0].split("=")[1].strip(" ")
-        outputPath = lines[1].split("=")[1].strip(" ")
-        minPH = float(lines[2].split("=")[1].strip(" "))
-        maxPH = float(lines[3].split("=")[1].strip(" "))
-        minr = float(lines[4].split("=")[1].strip(" "))
-        autoflag = lines[6].split("=")[1].strip(" ")
-        binWidth = float(lines[7].split("=")[1].strip(" "))
-        return inputPath, outputPath, minPH, maxPH, minr, autoflag, binWidth  
+    inputPath = lines[0].split("=")[1].strip(" ")
+    outputPath = lines[1].split("=")[1].strip(" ")
+    minPH = float(lines[2].split("=")[1].strip(" "))
+    maxPH = float(lines[3].split("=")[1].strip(" "))
+    minr = float(lines[4].split("=")[1].strip(" "))
+    autoflag = lines[6].split("=")[1].strip(" ")
+    binWidth = float(lines[7].split("=")[1].strip(" "))
+    return inputPath, outputPath, minPH, maxPH, minr, autoflag, binWidth  
 if __name__ == '__main__':
     inputPath, outputPath, minPH, maxPH, minr, autoflag, binWidth  = plotParamsRead()
     x, y = readExport(inputPath)
