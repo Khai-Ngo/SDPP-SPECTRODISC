@@ -174,6 +174,9 @@ if __name__ == '__main__':
     print("Total number of processed pulse: %d" % len(areaArray))
     save(areaArray, ratioArray, tArr, filename = "Area-PSD-timeStamp",xlabel = "PH", ylabel = "PSD", zlabel = "Time_stamp")
     print("Hecho. Hasta luego\n")
+    areaArray.clear()
+    ratioArray.clear()
+    tArr.clear()
 
 
 
