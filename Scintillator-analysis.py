@@ -4,9 +4,9 @@ import scipy.integrate
 import matplotlib.pyplot as plt
 
 # specify input and output directories here
-inputDir = r'E:\CLYC gamma calib\co-60-960'
-outputDirectory = r'E:\CLYC gamma calib\Analysis results\co-60-960'
-filename = "wave1_{}"
+inputDir = r'E:\Scintillator analysis code\test-input'
+outputDirectory = r'E:\Scintillator analysis code\test-output'
+filename = "scint1_wave1_20"
 
 def trapezoidal (pulse):
     l = len(pulse)
@@ -31,7 +31,7 @@ def pile_up_flag (pulse):
     pulse_Ftrap = trapezoidal(pulse)
     length = len(pulse_Ftrap)
     maxPulse = max(pulse_Ftrap)
-    trigger = maxPulse*0.25
+    trigger = maxPulse*0.20
     count = 0
     i = 0
     flag = 1
@@ -97,8 +97,8 @@ def pulseAreaEJ276 (pulseArray, shortGate = 60, longGate = 220):
     startIndex -= 5 
     if startIndex < 0:
         startIndex = 0
-    stopShort = startIndex + short
-    stopLong = startIndex + long
+    stopShort = startIndex + shortGate
+    stopLong = startIndex + longGate
     if stopShort > (length - 1):
         stopShort = length - 1
     if stopLong > (length - 1):
@@ -125,7 +125,7 @@ def buildHist(arr, filename, minVal, maxVal, noOfBins, auto = False, plot = Fals
         plt.show()
 def buildTimeTrace(countArray, cycle, filename):
     print("Exporting time trace of " + filename + "...\n")
-    fileDestination = outputDirectory + "\\Time trace of " + filename + ".txt"
+    fileDestination = outputDirectory +"\\"+ filename + ".txt"
     f = open (fileDestination, 'w')
     f.write('Time(sec)\tCounts\n')
     for i in range(len(countArray)):
@@ -156,14 +156,14 @@ if __name__ == '__main__':
     cycle = 1.0 # in seconds
     pileUpCount = 0
     count = 0
-    countThreshold = 5.0# in mV
+    threshold = 5.0# in mV
 
     countArray = []
     ratioArray = []
     areaArray= []
     #reading input file
     filepath = inputDir + "\\"+filename + ".dat"
-     with open(filepath, 'rb') as file:
+    with open(filepath, 'rb') as file:
         while True:        
             # read header for pulse length and time stamp
             buffer = file.read(24)
@@ -188,12 +188,15 @@ if __name__ == '__main__':
             baseline = float(sum(pulse[:10]))/10
             pulse = [baseline - float(elem) for elem in pulse] # subtract baseline from pulse
             # recording counts
-            if max(pulse) > countThreshold:
+            if max(pulse) > threshold:
+                if not pile_up_flag(pulse):
                     count +=1
-                    A1, A2, PH = pulseArea (pulse, W1, W2, delay, allGate)
-                    areaArray.append(PH)
-                    r = A2/(A1+A2)
+                    short, long = pulseAreaEJ276(pulse)
+                    areaArray.append(long)
+                    r = long/short
                     ratioArray.append(r)
+                else:
+                    pileUpCount +=1
             if time_elasped_sec > currentCycle: # check for count after as soon as 1 cycle is complete
                 print("Analysed "+ str(pulsenum)+ " pulses after " + str(currentCycle)+" seconds")
                 currentCycle += cycle
@@ -203,7 +206,8 @@ if __name__ == '__main__':
     print("Total number of pulses:" + str(pulsenum)+"\n")
     print("Total number of pile-up pulses: %d"%(pileUpCount))
     print("Total number of processed pulse: %d" % len(areaArray))
-    save(areaArray, ratioArray, filename = "PH_PSD-80-20delay-500-Co60-960V",xlabel = "PH", ylabel = "PSD")
+    save(areaArray, ratioArray, filename = "Area-PSD-og-code-output",xlabel = "PH", ylabel = "PSD")
+    buildTimeTrace(countArray, cycle, filename = "Time-trace-og-code-output")
     print("Hecho. Hasta luego\n")
 
 
