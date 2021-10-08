@@ -20,10 +20,11 @@ def twoDdataSelector (x, y, xlow = 0, xhigh = np.inf, ylow = 0, yhigh = np.inf, 
     xret = np.array(xret)
     yret = np.array(yret)
     return xret, yret
-def density_scatter( x , y, ax = None, xlow = 0, xhigh = 16000, ylow = 1, yhigh = 1.5, sort = True, bins = 20, xlabel = 'x', ylabel = 'y', limFlag = True, **kwargs )   :
+def density_scatter( x , y, ax = None, xlow = 0, xhigh = 16000, ylow = 1, yhigh = 1.5, sort = True, bins = 20, xlabel = 'x', ylabel = 'y', limFlag = True)   :
     """
     Scatter plot colored by 2d histogram
     """
+    fontsize = 18
     if ax is None :
         fig , ax = plt.subplots()
     data , x_e, y_e = np.histogram2d( x, y, bins = bins, density = True )
@@ -39,12 +40,15 @@ def density_scatter( x , y, ax = None, xlow = 0, xhigh = 16000, ylow = 1, yhigh 
     if limFlag:
         plt.ylim(ylow, yhigh)
         plt.xlim(xlow, xhigh)
-    ax.scatter( x, y, c=z, s=0.05,cmap = 'rainbow', **kwargs )
+    plt.rcParams['font.size'] = fontsize
+    for label in (ax.get_xticklabels()+ax.get_yticklabels()):
+        label.set_fontsize(fontsize)
+    ax.scatter( x, y, c=z, s=0.05,cmap = 'rainbow')
     norm = Normalize(vmin = np.min(z), vmax = np.max(z))
     cbar = fig.colorbar(cm.ScalarMappable(norm = norm), ax=ax)
     cbar.ax.set_ylabel('Density')
-    ax.set_xlabel(xlabel)
-    ax.set_ylabel(ylabel)
+    ax.set_xlabel(xlabel, fontsize = fontsize)
+    ax.set_ylabel(ylabel, fontsize = fontsize)
     plt.show()
     return ax
 def readExport (filepath):
@@ -73,5 +77,5 @@ if __name__ == '__main__':
     inputPath, minPH, maxPH, minr, maxr = plotParamsRead()
     x, y = readExport(inputPath)
     xprime, yprime = twoDdataSelector (x, y, xlow = minPH, xhigh = maxPH, ylow = minr, yhigh = maxr)
-    density_scatter(xprime, yprime, xlow = minPH, xhigh = maxPH, ylow = minr, yhigh = maxr, bins = [1000,1000], xlabel = 'Pulse area', ylabel = 'PSD')
+    density_scatter(xprime, yprime, xlow = minPH, xhigh = maxPH, ylow = minr, yhigh = maxr, bins = [1000,1000], xlabel = 'Pulse Height (mV.ns)', ylabel = 'PSD')
     
