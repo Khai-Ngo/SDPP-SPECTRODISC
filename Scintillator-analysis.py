@@ -123,43 +123,24 @@ def buildHist(arr, filename, minVal, maxVal, noOfBins, auto = False, plot = Fals
     if plot:
         plt.plot(bin_edges[:len(PAS)], PAS)
         plt.show()
-def buildTimeTrace(countArray, cycle, filename):
-    print("Exporting time trace of " + filename + "...\n")
-    fileDestination = outputDirectory +"\\"+ filename + ".txt"
-    f = open (fileDestination, 'w')
-    f.write('Time(sec)\tCounts\n')
-    for i in range(len(countArray)):
-        f.write('%d\t%d\n'%(i*cycle, countArray[i]))
-    f.close()
-def save(x, y, filename, xlabel = "x", ylabel = "y"):
+def save(x, y, z, filename, xlabel = "x", ylabel = "y", zlabel = "z"):
     filepath = outputDirectory+"\\"+filename+".txt"
     f = open(filepath, "w")
-    f.write("{}\t{}\n".format(xlabel, ylabel))
-    assert len(x) == len(y), "To write to txt, need same length array!"
+    f.write("{}\t{}\t{}\n".format(xlabel, ylabel, zlabel))
+    assert len(x) == len(y) and len(x) == len(z), "To write to txt, need same length array!"
     for i in range(len(x)):
-        f.write("{}\t{}\n".format(x[i], y[i]))
+        f.write("{}\t{}\t{}\n".format(x[i], y[i],z[i]))
     f.close()
     print("Data saved to {} successfully".format(filepath))
 # main
 if __name__ == '__main__':
     # initialise variables
-    length = 0 # pulse length
-    currentTimeStamp = 0.0
-    time_elasped_microsec = 0.0
-    Reset = 0.0
-    FirstTimeC = 0.0
-    time_elasped_sec = 0.0
-    fi = 0 # first pulse flag
     pulsenum = 0
-
-    currentCycle = 1.0 # in seconds
-    cycle = 1.0 # in seconds
     pileUpCount = 0
-    count = 0
     threshold = 5.0# in mV
-
     countArray = []
     ratioArray = []
+    tArr = []
     areaArray= []
     #reading input file
     filepath = inputDir + "\\"+filename + ".dat"
@@ -171,16 +152,6 @@ if __name__ == '__main__':
             length, idk2, idk3, idk4, idk5, this_time_stamp = struct.unpack('=iiiiiI', buffer)
             length = int((length-24)/2)
             currentTimeStamp = float(this_time_stamp) * 0.008 # in microseconds
-            # check for reset
-            if fi == 0:
-                FirstTimeC = currentTimeStamp
-                fi = 1
-            currentTimeStamp = currentTimeStamp + Reset - FirstTimeC
-            if currentTimeStamp < time_elasped_microsec:
-                Reset = Reset + 17179869.19
-                time_elasped_microsec = currentTimeStamp + 17179869.19
-            else: time_elasped_microsec = currentTimeStamp
-            time_elasped_sec = time_elasped_microsec / 1000000.0 # in seconds
             # read and analyse pulse
             shortbuffer = file.read(2 * length)
             pulse = struct.unpack(f'={length}h', shortbuffer)
@@ -190,24 +161,18 @@ if __name__ == '__main__':
             # recording counts
             if max(pulse) > threshold:
                 if not pile_up_flag(pulse):
-                    count +=1
                     short, long = pulseAreaEJ276(pulse)
                     areaArray.append(long)
                     r = long/short
                     ratioArray.append(r)
+                    tArr.append(currentTimeStamp)
                 else:
-                    pileUpCount +=1
-            if time_elasped_sec > currentCycle: # check for count after as soon as 1 cycle is complete
-                print("Analysed "+ str(pulsenum)+ " pulses after " + str(currentCycle)+" seconds")
-                currentCycle += cycle
-                countArray.append(count)
-                count = 0 # reset count for next cycle    
+                    pileUpCount +=1   
     # dat file has closed
     print("Total number of pulses:" + str(pulsenum)+"\n")
     print("Total number of pile-up pulses: %d"%(pileUpCount))
     print("Total number of processed pulse: %d" % len(areaArray))
-    save(areaArray, ratioArray, filename = "Area-PSD-og-code-output",xlabel = "PH", ylabel = "PSD")
-    buildTimeTrace(countArray, cycle, filename = "Time-trace-og-code-output")
+    save(areaArray, ratioArray, tArr, filename = "Area-PSD-timeStamp",xlabel = "PH", ylabel = "PSD", zlabel = "Time_stamp")
     print("Hecho. Hasta luego\n")
 
 
