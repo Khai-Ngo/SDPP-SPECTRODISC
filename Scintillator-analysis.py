@@ -198,9 +198,7 @@ if __name__ == '__main__':
                 print("Analysed "+ str(pulsenum)+ " pulses after " + str(currentCycle)+" seconds")
                 currentCycle += cycle
                 countArray.append(count)
-                count = 0 # reset count for next cycle
-            if time_elasped_sec >= 120: break
-    
+                count = 0 # reset count for next cycle    
     # dat file has closed
     print("Total number of pulses:" + str(pulsenum)+"\n")
     print("Total number of pile-up pulses: %d"%(pileUpCount))
