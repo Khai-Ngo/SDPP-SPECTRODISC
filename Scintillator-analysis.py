@@ -104,6 +104,13 @@ def save(x, y, z, outPath):
     print("Data saved to {} successfully\n".format(outPath))
 # main
 if __name__ == '__main__':
+    # mode
+    if sys.argv[1] == '276':
+        analyse = pulseAreaEJ276
+    elif sys.argv[1] == '7CLYC':
+        analyse = pulseAreaCLYC
+    else:
+        raise ValueError('Please input either 276 or 7CLYC for the first cmd argument')
     # initialise variables
     pulsenum = 0
     pileUpCount = 0
@@ -113,8 +120,8 @@ if __name__ == '__main__':
     tArr = []
     areaArray= []
     #reading input file
-    inPath = sys.argv[1]
-    outPath = sys.argv[2]
+    inPath = sys.argv[2]
+    outPath = sys.argv[3]
     with open(inPath, 'rb') as file:
         print ("Reading from {}".format(inPath))
         while True:        
@@ -133,7 +140,7 @@ if __name__ == '__main__':
             # recording counts
             if max(pulse) > threshold:
                 if not pile_up_flag(pulse):
-                    short, long = pulseAreaEJ276(pulse)
+                    short, long = analyse(pulse)
                     areaArray.append(long)
                     r = long/short
                     ratioArray.append(r)
