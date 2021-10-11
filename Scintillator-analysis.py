@@ -145,6 +145,7 @@ if __name__ == '__main__':
     #reading input file
     filepath = inputDir + "\\"+filename + ".dat"
     with open(filepath, 'rb') as file:
+        print ("Reading from {}".format(filepath))
         while True:        
             # read header for pulse length and time stamp
             buffer = file.read(24)
@@ -167,7 +168,9 @@ if __name__ == '__main__':
                     ratioArray.append(r)
                     tArr.append(currentTimeStamp)
                 else:
-                    pileUpCount +=1   
+                    pileUpCount +=1
+            if pulsenum % 10000 == 0:
+                print ("Analysed {} pulses".format(pulsenum))
     # dat file has closed
     print("Total number of pulses:" + str(pulsenum)+"\n")
     print("Total number of pile-up pulses: %d"%(pileUpCount))
