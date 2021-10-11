@@ -76,7 +76,8 @@ def pulseAreaCLYC (pulse, W1 = 80, W2 = 500, delay = 20, allGate = 1800):
     shortInte = scipy.integrate.trapz (pulse[startIndex:startIndex+W1+1], None, dx = 1.0) 
     longInte = scipy.integrate.trapz (pulse[startIndex+W1+delay:startIndex+W1+delay+W2+1], None, dx = 1.0)
     allInte = scipy.integrate.trapz (pulse[startIndex:end+1], None, dx = 1.0)
-    return shortInte, longInte, allInte
+    PSD = longInte/(shortInte+longInte)
+    return allInte, PSD
 def pulseAreaEJ276 (pulseArray, shortGate = 60, longGate = 220):
     length = len(pulseArray)
     threshold = 5.0 #mV
@@ -94,7 +95,8 @@ def pulseAreaEJ276 (pulseArray, shortGate = 60, longGate = 220):
         stopLong = length - 1
     shortInte = scipy.integrate.trapz (pulseArray[startIndex:stopShort+1], None, dx = 1.0) 
     longInte = scipy.integrate.trapz (pulseArray[startIndex:stopLong+1], None, dx = 1.0)
-    return shortInte, longInte
+    PSD = longInte/shortInte
+    return longInte, PSD
 def save(x, y, z, outPath):
     f = open(outPath, "a")
     assert len(x) == len(y) and len(x) == len(z), "To write to txt, need same length array!"
@@ -140,9 +142,8 @@ if __name__ == '__main__':
             # recording counts
             if max(pulse) > threshold:
                 if not pile_up_flag(pulse):
-                    short, long = analyse(pulse)
-                    areaArray.append(long)
-                    r = long/short
+                    PH, r = analyse(pulse)
+                    areaArray.append(PH)
                     ratioArray.append(r)
                     tArr.append(currentTimeStamp)
                 else:
