@@ -1,12 +1,7 @@
 import numpy as np
 import struct
 import scipy.integrate
-import matplotlib.pyplot as plt
-
-# specify input and output directories here
-inputDir = r'E:\Scintillator analysis code\test-input'
-outputDirectory = r'E:\Scintillator analysis code'
-filename = "scint1_wave1_20"
+import sys
 
 def trapezoidal (pulse):
     l = len(pulse)
@@ -49,19 +44,13 @@ def pile_up_flag (pulse):
             break
         i+=step
     return ret
-def writeWave (pulseArray, pulsenum, filename):
-    len(pulseArray)
-    fileDestination = outputDirectory + "\pulse" + str(pulsenum) + filename + ".txt"
-    f1 = open(fileDestination, 'w')
+def writeWave (pulseArray, pulsenum, inPath):
+    length = len(pulseArray)
+    f1 = open(inPath, 'w')
     for i in range(length):
         f1.write('%s\t%s\n'%(i, pulseArray[i]))
     f1.close()
     print("Write successfully to " + fileDestination)
-def plotWave (pulse):
-    length = len(pulse)
-    xdata = np.arange(0, length, 1)
-    plt.plot(xdata, pulse)
-    plt.show()
 def normalise(pulse):
     maxPulse = max(pulse)
     ret = np.array(pulse)
@@ -106,31 +95,13 @@ def pulseAreaEJ276 (pulseArray, shortGate = 60, longGate = 220):
     shortInte = scipy.integrate.trapz (pulseArray[startIndex:stopShort+1], None, dx = 1.0) 
     longInte = scipy.integrate.trapz (pulseArray[startIndex:stopLong+1], None, dx = 1.0)
     return shortInte, longInte
-def buildHist(arr, filename, minVal, maxVal, noOfBins, auto = False, plot = False, save = True):
-    print("Building histogram...")
-    if auto:
-        PAS, bin_edges = np.histogram(arr, bins = 'auto') # auto-binning is used
-    else:
-        PAS, bin_edges = np.histogram(arr, bins = noOfBins, range = (minVal, maxVal))
-    if save:
-        fileDestination = outputDirectory + "\\"+filename+ ".txt"
-        f = open (fileDestination, 'w')
-        f.write('Value\tCounts\n')
-        for i in range(len(PAS)):
-            f.write('%s\t%s\n'%(bin_edges[i], PAS[i]))
-        f.close()
-        print("Wrote histogram succesffully to " + fileDestination+"\n")
-    if plot:
-        plt.plot(bin_edges[:len(PAS)], PAS)
-        plt.show()
-def save(x, y, z, filename):
-    filepath = outputDirectory+"\\"+filename+".txt"
-    f = open(filepath, "a")
+def save(x, y, z, outPath):
+    f = open(outPath, "a")
     assert len(x) == len(y) and len(x) == len(z), "To write to txt, need same length array!"
     for i in range(len(x)):
         f.write("{}\t{}\t{}\n".format(x[i], y[i],z[i]))
     f.close()
-    print("Data saved to {} successfully".format(filepath))
+    print("Data saved to {} successfully\n".format(outPath))
 # main
 if __name__ == '__main__':
     # initialise variables
@@ -142,9 +113,10 @@ if __name__ == '__main__':
     tArr = []
     areaArray= []
     #reading input file
-    filepath = inputDir + "\\"+filename + ".dat"
-    with open(filepath, 'rb') as file:
-        print ("Reading from {}".format(filepath))
+    inPath = sys.argv[1]
+    outPath = sys.argv[2]
+    with open(inPath, 'rb') as file:
+        print ("Reading from {}".format(inPath))
         while True:        
             # read header for pulse length and time stamp
             buffer = file.read(24)
@@ -174,8 +146,7 @@ if __name__ == '__main__':
     print("Total number of pulses:" + str(pulsenum)+"\n")
     print("Total number of pile-up pulses: %d"%(pileUpCount))
     print("Total number of processed pulse: %d" % len(areaArray))
-    save(areaArray, ratioArray, tArr, filename = "Area-PSD-timeStamp")
-    print("Hecho. Hasta luego\n")
+    save(areaArray, ratioArray, tArr, outPath)
     areaArray.clear()
     ratioArray.clear()
     tArr.clear()
