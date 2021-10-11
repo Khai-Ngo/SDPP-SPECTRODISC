@@ -1,6 +1,4 @@
-import numpy as np
 import struct
-import scipy.integrate
 import sys
 
 def trapezoidal (pulse):
@@ -20,6 +18,11 @@ def trapezoidal (pulse):
         Vout = Vav2-Vav1
         pulse_Ftrap.append(Vout)
     return pulse_Ftrap
+def inteTrapz (yArr, dx):
+    ret = yArr[0]
+    for i in range (1, len(yArr)):
+        ret += 1/2*dx*(yArr[i]+yArr[i-1])
+    return ret
 def pile_up_flag (pulse):
     ret = False
     step = 5
@@ -73,9 +76,9 @@ def pulseAreaCLYC (pulse, W1 = 80, W2 = 500, delay = 20, allGate = 1800):
     end = startIndex+allGate
     if end > (length - 1):
         end = length -1
-    shortInte = scipy.integrate.trapz (pulse[startIndex:startIndex+W1+1], None, dx = 1.0) 
-    longInte = scipy.integrate.trapz (pulse[startIndex+W1+delay:startIndex+W1+delay+W2+1], None, dx = 1.0)
-    allInte = scipy.integrate.trapz (pulse[startIndex:end+1], None, dx = 1.0)
+    shortInte = inteTrapz (pulse[startIndex:startIndex+W1+1], dx = 1.0) 
+    longInte = inteTrapz (pulse[startIndex+W1+delay:startIndex+W1+delay+W2+1], dx = 1.0)
+    allInte = inteTrapz (pulse[startIndex:end+1], dx = 1.0)
     PSD = longInte/(shortInte+longInte)
     return allInte, PSD
 def pulseAreaEJ276 (pulseArray, shortGate = 60, longGate = 220):
@@ -93,8 +96,8 @@ def pulseAreaEJ276 (pulseArray, shortGate = 60, longGate = 220):
     stopLong = startIndex + longGate
     if stopLong > (length - 1):
         stopLong = length - 1
-    shortInte = scipy.integrate.trapz (pulseArray[startIndex:stopShort+1], None, dx = 1.0) 
-    longInte = scipy.integrate.trapz (pulseArray[startIndex:stopLong+1], None, dx = 1.0)
+    shortInte = inteTrapz (pulseArray[startIndex:stopShort+1], dx = 1.0) 
+    longInte = inteTrapz (pulseArray[startIndex:stopLong+1], dx = 1.0)
     PSD = longInte/shortInte
     return longInte, PSD
 def save(x, y, z, outPath):
