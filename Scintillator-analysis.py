@@ -70,12 +70,12 @@ def pulseAreaCLYC (pulse, W1 = 80, W2 = 500, delay = 20, allGate = 1800):
     # make sure that integration bounds are sensible
     if startIndex < 0:
         startIndex = 0
-    end = startIndex+allGate+1
+    end = startIndex+allGate
     if end > (length - 1):
         end = length -1
     shortInte = scipy.integrate.trapz (pulse[startIndex:startIndex+W1+1], None, dx = 1.0) 
     longInte = scipy.integrate.trapz (pulse[startIndex+W1+delay:startIndex+W1+delay+W2+1], None, dx = 1.0)
-    allInte = scipy.integrate.trapz (pulse[startIndex:end], None, dx = 1.0)
+    allInte = scipy.integrate.trapz (pulse[startIndex:end+1], None, dx = 1.0)
     return shortInte, longInte, allInte
 def pulseAreaEJ276 (pulseArray, shortGate = 60, longGate = 220):
     length = len(pulseArray)
