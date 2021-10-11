@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 # specify input and output directories here
 inputDir = r'E:\Scintillator analysis code\test-input'
-outputDirectory = r'E:\Scintillator analysis code\test-output'
+outputDirectory = r'E:\Scintillator analysis code'
 filename = "scint1_wave1_20"
 
 def trapezoidal (pulse):
@@ -123,10 +123,9 @@ def buildHist(arr, filename, minVal, maxVal, noOfBins, auto = False, plot = Fals
     if plot:
         plt.plot(bin_edges[:len(PAS)], PAS)
         plt.show()
-def save(x, y, z, filename, xlabel = "x", ylabel = "y", zlabel = "z"):
+def save(x, y, z, filename):
     filepath = outputDirectory+"\\"+filename+".txt"
-    f = open(filepath, "w")
-    f.write("{}\t{}\t{}\n".format(xlabel, ylabel, zlabel))
+    f = open(filepath, "a")
     assert len(x) == len(y) and len(x) == len(z), "To write to txt, need same length array!"
     for i in range(len(x)):
         f.write("{}\t{}\t{}\n".format(x[i], y[i],z[i]))
@@ -175,7 +174,7 @@ if __name__ == '__main__':
     print("Total number of pulses:" + str(pulsenum)+"\n")
     print("Total number of pile-up pulses: %d"%(pileUpCount))
     print("Total number of processed pulse: %d" % len(areaArray))
-    save(areaArray, ratioArray, tArr, filename = "Area-PSD-timeStamp",xlabel = "PH", ylabel = "PSD", zlabel = "Time_stamp")
+    save(areaArray, ratioArray, tArr, filename = "Area-PSD-timeStamp")
     print("Hecho. Hasta luego\n")
     areaArray.clear()
     ratioArray.clear()

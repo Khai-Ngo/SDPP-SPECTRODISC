@@ -41,7 +41,7 @@ def readExport (filepath):
     with open(filepath) as f:
         x = []
         y= []
-        lines = f.readlines()[1:]
+        lines = f.readlines()
         for line in lines:
             tmp = line.split()[0]
             if tmp != 'nan':

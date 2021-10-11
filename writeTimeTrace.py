@@ -2,7 +2,7 @@ import sys
 def readTime(inputPath):
     with open(inputPath) as f:
         t = []
-        lines = f.readlines()[1:]
+        lines = f.readlines()
         for line in lines:
             t.append(line.split()[2])
         return t
