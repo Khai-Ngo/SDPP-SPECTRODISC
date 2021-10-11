@@ -50,6 +50,10 @@ def readExport (filepath):
         x = np.array(x)
         y = np.array(y)
         return x, y
+def convertBool (string):
+    if string == 'TRUE' or string == 'T' or string == 'true' or string == 'True' or string == '1':
+        return True
+    else: return False
 def plotParamsRead():
     with open("plotParams.par") as f:
         lines = [line.strip("\n") for line in f.readlines() if not line.startswith('#')]
@@ -64,9 +68,13 @@ def plotParamsRead():
 if __name__ == '__main__':
     inputPath, outputPath, minPH, maxPH, minr, autoflag, binWidth  = plotParamsRead()
     x, y = readExport(inputPath)
-    noOfBins = int(maxPH/binWidth)
+    autoflag = convertBool(autoflag)
     LO = (0.627*x - 41)/1000
     LO, yprime = twoDdataSelector (LO, y, xlow = minPH, xhigh = maxPH, ylow = minr)
-    buildHist(LO, outputPath, minVal = minPH, maxVal = maxPH, noOfBins = noOfBins, auto = False, plot = True, save = True)
+    if not autoflag:
+        noOfBins = int(maxPH/binWidth)
+        buildHist(LO, outputPath, minVal = minPH, maxVal = maxPH, noOfBins = noOfBins, auto = False, plot = True, save = True)
+    else:
+        buildHist(LO, outputPath, minVal = 0, maxVal = 0, noOfBins = 0, auto = True, plot = True, save = True)
 
 
