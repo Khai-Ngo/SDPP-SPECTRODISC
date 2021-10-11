@@ -1,4 +1,3 @@
-import numpy as np
 import struct
 import scipy.integrate
 import sys
