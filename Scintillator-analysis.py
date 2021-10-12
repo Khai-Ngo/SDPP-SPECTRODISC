@@ -114,7 +114,7 @@ if __name__ == '__main__':
         raise ValueError('Please input either 276 or 7CLYC for the first cmd argument')
     # initialise variables
     pulsenum = 0
-    pileUpCount = 0
+    #pileUpCount = 0
     threshold = 5.0# in mV
     countArray = []
     ratioArray = []
@@ -140,18 +140,18 @@ if __name__ == '__main__':
             pulse = [baseline - float(elem) for elem in pulse] # subtract baseline from pulse
             # recording counts
             if max(pulse) > threshold:
-                if not pile_up_flag(pulse):
+                #if not pile_up_flag(pulse):
                     PH, r = analyse(pulse)
                     areaArray.append(PH)
                     ratioArray.append(r)
                     tArr.append(currentTimeStamp)
-                else:
-                    pileUpCount +=1
+                #else:
+                    #pileUpCount +=1
             if pulsenum % 10000 == 0:
                 print ("Analysed {} pulses".format(pulsenum))
     # dat file has closed
     print("Total number of pulses:" + str(pulsenum)+"\n")
-    print("Total number of pile-up pulses: %d"%(pileUpCount))
+    #print("Total number of pile-up pulses: %d"%(pileUpCount))
     print("Total number of processed pulse: %d" % len(areaArray))
     save(areaArray, ratioArray, tArr, outPath)
     areaArray.clear()
