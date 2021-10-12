@@ -2,3 +2,5 @@ __pycache__/
 *.txt
 test-input/
 test-output/
+test-co-60-980/
+test-output-co/
