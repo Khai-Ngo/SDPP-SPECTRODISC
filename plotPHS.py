@@ -69,12 +69,12 @@ if __name__ == '__main__':
     inputPath, outputPath, minPH, maxPH, minr, autoflag, binWidth  = plotParamsRead()
     x, y = readExport(inputPath)
     autoflag = convertBool(autoflag)
-    LO = (0.627*x - 41)/1000
-    LO, yprime = twoDdataSelector (LO, y, xlow = minPH, xhigh = maxPH, ylow = minr)
+    #LO = (0.627*x - 41)/1000
+    xprime, yprime = twoDdataSelector (x, y, xlow = minPH, xhigh = maxPH, ylow = minr)
     if not autoflag:
         noOfBins = int(maxPH/binWidth)
-        buildHist(LO, outputPath, minVal = minPH, maxVal = maxPH, noOfBins = noOfBins, auto = False, plot = True, save = True)
+        buildHist(xprime, outputPath, minVal = minPH, maxVal = maxPH, noOfBins = noOfBins, auto = False, plot = True, save = True)
     else:
-        buildHist(LO, outputPath, minVal = 0, maxVal = 0, noOfBins = 0, auto = True, plot = True, save = True)
+        buildHist(xprime, outputPath, minVal = 0, maxVal = 0, noOfBins = 0, auto = True, plot = True, save = True)
 
 
