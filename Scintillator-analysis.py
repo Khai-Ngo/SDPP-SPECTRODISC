@@ -43,13 +43,13 @@ def pile_up_flag (pulse):
             break
         i+=step
     return ret
-def writeWave (pulseArray, pulsenum, inPath):
+def writeWave (pulseArray, pulsenum, outPath):
     length = len(pulseArray)
-    f1 = open(inPath, 'w')
+    f1 = open(outPath+"\pulse{}.txt".format(pulsenum), 'w')
     for i in range(length):
         f1.write('%s\t%s\n'%(i, pulseArray[i]))
     f1.close()
-    print("Write successfully to " + fileDestination)
+    print("Write successfully to {}".format(outPath))
 def pulseAreaCLYC (pulse, W1 = 80, W2 = 500, delay = 20, allGate = 1800):
     length = len(pulse)
     threshold = 5.0 #mV
@@ -139,8 +139,6 @@ if __name__ == '__main__':
                     areaArray.append(PH)
                     ratioArray.append(r)
                     tArr.append(currentTimeStamp)
-                #else:
-                    #pileUpCount +=1
             if pulsenum % 10000 == 0:
                 print ("Analysed {} pulses".format(pulsenum))
     # dat file has closed
