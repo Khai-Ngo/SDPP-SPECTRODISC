@@ -50,12 +50,6 @@ def writeWave (pulseArray, pulsenum, inPath):
         f1.write('%s\t%s\n'%(i, pulseArray[i]))
     f1.close()
     print("Write successfully to " + fileDestination)
-def normalise(pulse):
-    maxPulse = max(pulse)
-    ret = np.array(pulse)
-    for i in range(len(ret)):
-        ret[i] /= maxPulse
-    return ret
 def pulseAreaCLYC (pulse, W1 = 80, W2 = 500, delay = 20, allGate = 1800):
     length = len(pulse)
     threshold = 5.0 #mV
