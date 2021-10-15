@@ -72,7 +72,7 @@ if __name__ == '__main__':
     #LO = (0.627*x - 41)/1000
     xprime, yprime = twoDdataSelector (x, y, xlow = minPH, xhigh = maxPH, ylow = minr)
     if not autoflag:
-        noOfBins = int(maxPH/binWidth)
+        noOfBins = int((maxPH-minPH)/binWidth)
         buildHist(xprime, outputPath, minVal = minPH, maxVal = maxPH, noOfBins = noOfBins, auto = False, plot = True, save = True)
     else:
         buildHist(xprime, outputPath, minVal = 0, maxVal = 0, noOfBins = 0, auto = True, plot = True, save = True)
