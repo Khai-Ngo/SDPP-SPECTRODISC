@@ -52,18 +52,8 @@ def density_scatter( x , y, ax = None, xlow = 0, xhigh = 16000, ylow = 1, yhigh 
     plt.show()
     return ax
 def readExport (filepath):
-    with open(filepath) as f:
-        x = []
-        y= []
-        lines = f.readlines()
-        for line in lines:
-            tmp = line.split()[0]
-            if tmp != 'nan':
-                x.append(float(tmp))
-                y.append(float(line.split()[1]))
-        x = np.array(x)
-        y = np.array(y)
-        return x, y
+    buffer = np.genfromtxt(filepath, delimiter = '\t', missing_values = 'nan')
+    return buffer[:,0], buffer[:,1]
 def plotParamsRead():
     with open("plotParams.par") as f:
         lines = [line.strip("\n") for line in f.readlines() if not line.startswith('#')]
@@ -78,4 +68,3 @@ if __name__ == '__main__':
     x, y = readExport(inputPath)
     xprime, yprime = twoDdataSelector (x, y, xlow = minPH, xhigh = maxPH, ylow = minr, yhigh = maxr)
     density_scatter(xprime, yprime, xlow = minPH, xhigh = maxPH, ylow = minr, yhigh = maxr, bins = [1000,1000], xlabel = 'Pulse Height (mV.ns)', ylabel = 'PSD')
-    
