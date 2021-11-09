@@ -38,18 +38,8 @@ def buildHist(arr, filename, minVal, maxVal, noOfBins, auto = False, plot = Fals
         plt.plot(bin_edges[:len(PAS)], PAS)
         plt.show()
 def readExport (filepath):
-    with open(filepath) as f:
-        x = []
-        y= []
-        lines = f.readlines()
-        for line in lines:
-            tmp = line.split()[0]
-            if tmp != 'nan':
-                x.append(float(tmp))
-                y.append(float(line.split()[1]))
-        x = np.array(x)
-        y = np.array(y)
-        return x, y
+    buffer = np.genfromtxt(filepath, delimiter = '\t', missing_values = 'nan')
+    return buffer[:,0], buffer[:,1]
 def convertBool (string):
     if string == 'TRUE' or string == 'T' or string == 'true' or string == 'True' or string == '1':
         return True
@@ -76,5 +66,3 @@ if __name__ == '__main__':
         buildHist(xprime, outputPath, minVal = minPH, maxVal = maxPH, noOfBins = noOfBins, auto = False, plot = True, save = True)
     else:
         buildHist(xprime, outputPath, minVal = 0, maxVal = 0, noOfBins = 0, auto = True, plot = True, save = True)
-
-
