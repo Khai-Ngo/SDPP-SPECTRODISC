@@ -66,5 +66,5 @@ def plotParamsRead():
 if __name__ == '__main__':
     inputPath, minPH, maxPH, minr, maxr = plotParamsRead()
     x, y = readExport(inputPath)
-    xprime, yprime = twoDdataSelector (x, y, xlow = minPH, xhigh = maxPH, ylow = minr, yhigh = maxr)
+    xprime, yprime = twoDdataSelector (x, y, xlow = minPH, xhigh = maxPH, ylow = minr, yhigh = maxr, numPoint = 1000000)
     density_scatter(xprime, yprime, xlow = minPH, xhigh = maxPH, ylow = minr, yhigh = maxr, bins = [1000,1000], xlabel = 'Pulse Height (mV.ns)', ylabel = 'PSD')
