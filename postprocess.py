@@ -4,9 +4,9 @@ from matplotlib import cm
 from matplotlib.colors import Normalize 
 from scipy.interpolate import interpn
 import sys
-def readExport (filepath):
-    buffer = np.genfromtxt(filepath, delimiter = '\t', missing_values = 'nan')
-    return buffer[:,0], buffer[:,1]
+def readExport (filepath, max_rows = None):
+    df = np.genfromtxt(filepath, delimiter = '\t', missing_values = 'nan', max_rows = max_rows)
+    return df[:,0], df[:,1]
 def dataTruncator (x, y, xlow = 0, xhigh = np.inf, ylow = 0, yhigh = np.inf, numPoint = np.inf):
     xret = []
     yret = []
@@ -23,18 +23,16 @@ def dataTruncator (x, y, xlow = 0, xhigh = np.inf, ylow = 0, yhigh = np.inf, num
     yret = np.array(yret)
     return xret, yret
 def buildHist(arr, filename, minVal, maxVal, noOfBins, auto = False, plot = False, save = True):
-    print("Building histogram...")
     if auto:
         PAS, bin_edges = np.histogram(arr, bins = 'auto') # auto-binning is used
     else:
         PAS, bin_edges = np.histogram(arr, bins = noOfBins, range = (minVal, maxVal))
     if save:
-        f = open ("{}.txt".format(filename), 'w')
+        f = open(filename,"w")
         f.write('Value\tCounts\n')
         for i in range(len(PAS)):
             f.write('%s\t%s\n'%(bin_edges[i], PAS[i]))
         f.close()
-        print("Wrote histogram succesffully\n")
     if plot:
         plt.plot(bin_edges[:len(PAS)], PAS)
         plt.show()
