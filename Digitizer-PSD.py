@@ -13,6 +13,8 @@ class labelledFields:
         self.Field.grid(row = 0, column = 1, columnspan = txtboxspan)
     def get(self):
         return self.Field.get()
+    def clear(self):
+        self.Field.delete(0, END)
 class fileDialogButtons (labelledFields):
     def __init__(self, frame, label, padx = 5, pady = 5, width = 10, borderwidth = 5):
         labelledFields.__init__(self, frame, label, padx = 5, pady = 5, width = width, borderwidth = borderwidth)
@@ -28,25 +30,47 @@ class dropdownMenus:
     def __init__(self, frame, label, options, padx = 5, pady = 5):
         self.Frame = LabelFrame(frame, padx=padx, pady=pady)
         self.Label = Label(self.Frame, text = label)
-        clicked = StringVar()
-        self.Menu= OptionMenu(self.Frame, clicked, *options)
-        clicked.set(options[0])
+        self.clicked = StringVar()
+        self.Menu= OptionMenu(self.Frame, self.clicked, *options)
+        self.clicked.set(options[0])
     def place(self, row, column, columnspan = 1, boxspan = 1):
         self.Frame.grid(row = row, column = column, columnspan = columnspan)
         self.Label.grid(row = 0, column = 0)
         self.Menu.grid(row = 0, column = 1, columnspan = boxspan)
+    def get(self):
+        return self.clicked.get()
 def plotScatterplot():
-    x, y = pp.readExport(inFile.get())
-    x, y = pp.dataTruncator(x, y, xlow = int(Min_x.get()), xhigh = int(Max_x.get()), ylow = float(Min_y.get()), yhigh = float(Max_y.get()), numPoint = 1e6)
-    a = 1
-    b = 0
+    x, y = pp.readExport(inFile.get(), max_rows = 1.2e6)
     if a_const.get() and b_const.get():
         a = float(a_const.get())
         b = float(b_const.get())
         x = a*x + b
-    pp.density_scatter(x, y, xlow = a*int(Min_x.get())+b, xhigh = a*int(Max_x.get())+b, ylow = float(Min_y.get()), yhigh = float(Max_y.get()), bins = [1000,1000], xlabel = x_name.get(), ylabel = y_name.get())
+    x, y = pp.dataTruncator(x, y, xlow = float(Min_x.get()), xhigh = float(Max_x.get()), ylow = float(Min_y.get()), yhigh = float(Max_y.get()), numPoint = 1e6)
+    pp.density_scatter(x, y, xlow = float(Min_x.get()), xhigh = float(Max_x.get()), ylow = float(Min_y.get()), yhigh = float(Max_y.get()), bins = [1000,1000], xlabel = x_name.get(), ylabel = y_name.get())
 def plotHist():
-    return
+    filename = filedialog.asksaveasfilename(initialdir = "/", title = "Save histogram to", filetypes=(("Text files","*.txt"), ("All files","*.*")))
+    x, y = pp.readExport(inFile.get())
+    if a_const.get() and b_const.get():
+        a = float(a_const.get())
+        b = float(b_const.get())
+        x = a*x + b
+    x, y = pp.dataTruncator(x, y, xlow = float(Min_x.get()), xhigh = float(Max_x.get()), ylow = float(Min_y.get()), yhigh = float(Max_y.get()))    
+    auto = True if autobinning.get() == 'Yes' else False
+    if quantity.get() == 'Pulse Height':
+        pp.buildHist(x, filename, minVal = float(Min_x.get()), maxVal = float(Max_x.get()), noOfBins = int(noOfBins.get()), auto = auto, plot = True, save = True)
+    else:
+        pp.buildHist(y, filename, minVal = float(Min_y.get()), maxVal = float(Max_y.get()), noOfBins = int(noOfBins.get()), auto = auto, plot = True, save = True)        
+def clear_all():
+    inFile.clear()
+    Min_x.clear()
+    Max_x.clear()
+    Min_y.clear()
+    Max_y.clear()
+    x_name.clear()
+    y_name.clear()
+    a_const.clear()
+    b_const.clear()
+    noOfBins.clear()
 if __name__ == '__main__':
     # Create the window
     root = Tk()
@@ -59,7 +83,7 @@ if __name__ == '__main__':
     Min_x = labelledFields(range_controls, label = 'Minimum PH:')
     Max_x = labelledFields(range_controls, label = 'Maximum PH:')
     Min_y = labelledFields(range_controls, label = 'Minimum PSD:')
-    Max_y = labelledFields(range_controls, label = 'Minimum PSD:')
+    Max_y = labelledFields(range_controls, label = 'Maximum PSD:')
     
     spectrum_controls = LabelFrame(root, text = 'Further histogram building controls', padx = 22, pady = 5)
     quantity = dropdownMenus(spectrum_controls, label = "Quantity:", options = ("Pulse Height", "PSD"))
@@ -70,12 +94,13 @@ if __name__ == '__main__':
     x_name = labelledFields( plot_options, label = 'x-axis label:')
     y_name = labelledFields( plot_options, label = 'y-axis label:')
 
-    mevee_scaling = LabelFrame(root, text = 'MeVee scaling: E (MeVee) = A*PH + B', padx = 5, pady = 5)
-    a_const = labelledFields( mevee_scaling, label = 'A:')
-    b_const = labelledFields( mevee_scaling, label = 'B:') 
+    scaling = LabelFrame(root, text = 'Scaling: PH -> A*PH + B', padx = 5, pady = 5)
+    a_const = labelledFields( scaling, label = 'A:')
+    b_const = labelledFields( scaling, label = 'B:') 
     
     scatterplot_button = Button(root, text = 'Plot scatterplot', command = plotScatterplot, padx = 20, pady=20, borderwidth = 5)
     hist_button = Button(root, text = 'Plot histogram', command = plotHist, padx = 20, pady = 20, borderwidth= 5)
+    clear_button = Button (root, text = 'Clear all', command = clear_all, padx = 20, pady=20, borderwidth = 5)
     
     # Place widgets
     titleLabel.grid(row = 0, column = 0)
@@ -87,20 +112,21 @@ if __name__ == '__main__':
     Min_y.place(row = 1, column = 0)
     Max_y.place(row = 1, column = 1)
     
-    spectrum_controls.grid(row = 2, column = 1, columnspan = 2, padx = 20 ,pady = 5)
+    spectrum_controls.grid(row = 2, column = 1, columnspan = 2, padx = 5 ,pady = 10)
     quantity.place(row = 0, column = 0)
     autobinning.place(row = 0, column =1)
     noOfBins.place(row=0, column =2)
     
-    plot_options.grid(row = 3, column = 1, pady = 5)
+    scaling.grid(row = 3,column = 1, pady = 5 )
+    a_const.place(row = 0, column = 0)
+    b_const.place(row = 0, column = 1)
+
+    plot_options.grid(row = 3, column = 2,padx = 10, pady = 5)
     x_name.place(row =0 , column = 0)
     y_name.place(row = 0, column = 1)
 
-    mevee_scaling.grid(row = 3,column = 2, padx = 15)
-    a_const.place(row = 0, column = 0)
-    b_const.place(row = 0, column = 1)
-    
     scatterplot_button.grid(row = 4, column = 0, pady = 10)
     hist_button.grid(row = 4, column = 1, pady = 10)
+    clear_button.grid(row = 4, column = 2, pady = 10)
     
     root.mainloop()
