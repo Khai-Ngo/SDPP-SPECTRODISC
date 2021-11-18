@@ -17,11 +17,13 @@ class labelledFields:
     def clear(self):
         self.Field.delete(0, END)
 class fileDialogButtons (labelledFields):
-    def __init__(self, frame, label, padx = 5, pady = 5, width = 10, borderwidth = 5):
+    def __init__(self, frame, label,  title = "Select a file", filetypes=(("Text files","*.txt"), ("All files","*.*")), padx = 5, pady = 5, width = 10, borderwidth = 5):
         labelledFields.__init__(self, frame, label, padx = 5, pady = 5, width = width, borderwidth = borderwidth)
+        self.title = title
+        self.filetypes = filetypes
         self.Button = Button (self.Frame, text = "...", command = self.open_file)
     def open_file(self):
-        filename = filedialog.askopenfilename(initialdir = "/", title = "Select a text file", filetypes=(("Text files","*.txt"), ("All files","*.*")))
+        filename = filedialog.askopenfilename(initialdir = "/", title = self.title, filetypes= self.filetypes)
         self.Field.delete(0, END)
         self.Field.insert(0, filename)
     def place(self, row, column, columnspan = 1, txtboxspan = 1):
@@ -47,7 +49,7 @@ def plotScatterplot():
         a = float(a_const.get())
         b = float(b_const.get())
         x = a*x + b
-    if truncate:
+    if truncate.get():
         x, y = pp.dataTruncator(x, y, xlow = float(Min_x.get()), xhigh = float(Max_x.get()), ylow = float(Min_y.get()), yhigh = float(Max_y.get()))
     pp.density_scatter(x, y, xlow = float(Min_x.get()), xhigh = float(Max_x.get()), ylow = float(Min_y.get()), yhigh = float(Max_y.get()), bins = [1000,1000], xlabel = x_name.get(), ylabel = y_name.get())
 def plotHist():
@@ -58,7 +60,7 @@ def plotHist():
         a = float(a_const.get())
         b = float(b_const.get())
         x = a*x + b
-    if truncate:
+    if truncate.get():
         x, y = pp.dataTruncator(x, y, xlow = float(Min_x.get()), xhigh = float(Max_x.get()), ylow = float(Min_y.get()), yhigh = float(Max_y.get()))    
     auto = True if autobinning.get() == 'Yes' else False
     if quantity.get() == 'Pulse Height':
@@ -76,9 +78,6 @@ def clear_all():
     a_const.clear()
     b_const.clear()
     noOfBins.clear()
-def truncate_change():
-    global truncate
-    truncate = not truncate
 if __name__ == '__main__':
     # Create the window
     root = Tk()
@@ -91,7 +90,9 @@ if __name__ == '__main__':
     n.add(f2, text = 'Plot')
     # Tab 1 widgets
     titleLabel1 = Label(f1, text = "Pulse height and pulse shape discrimination analysis - charge comparison method", padx = 10, pady=10)
-    inFile1 = fileDialogButtons(f1, label = 'Input file/folder:', width = 125)
+    inFile1 = fileDialogButtons(f1, label = 'Input data:', filetypes = (("Data files","*.dat"), ("All files","*.*")),width = 125)
+    multi = IntVar(value = 1)
+    multi_checkbox = Checkbutton(f1, text = 'Choose folder instead?', variable = multi) 
     # Tab 2 widgets
     titleLabel2 = Label(f2, text = "PSD scatterplot and histogram plotting", padx = 10, pady=10)
     inFile2 = fileDialogButtons(f2, label = 'Input file:', width = 125)
@@ -101,8 +102,8 @@ if __name__ == '__main__':
     Max_x = labelledFields(range_controls, label = 'Maximum PH:')
     Min_y = labelledFields(range_controls, label = 'Minimum PSD:')
     Max_y = labelledFields(range_controls, label = 'Maximum PSD:')
-    truncate = BooleanVar(value = True)
-    check_truncate = Checkbutton(range_controls, text = 'Truncate raw data to range?', command = truncate_change, variable = truncate)
+    truncate = IntVar(value = 1)
+    check_truncate = Checkbutton(range_controls, text = 'Truncate raw data to range?', variable = truncate)
     
     spectrum_controls = LabelFrame(f2, text = 'Further histogram building controls', padx = 20, pady =10)
     quantity = dropdownMenus(spectrum_controls, label = "Quantity:", options = ("Pulse Height", "PSD"))
@@ -126,6 +127,7 @@ if __name__ == '__main__':
     # Tab 1 widgets placement
     titleLabel1.grid(row = 0, column = 0)
     inFile1.place(row = 1, column = 0, columnspan = 2)
+    multi_checkbox.grid(row = 1, column = 2)
     # Tab 2 widgets placement
     titleLabel2.grid(row = 0, column = 0)
     inFile2.place(row = 1, column = 0, columnspan = 2)
