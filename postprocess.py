@@ -5,8 +5,8 @@ from matplotlib.colors import Normalize
 from scipy.interpolate import interpn
 import sys
 def readExport (filepath, max_rows = None):
-    df = np.genfromtxt(filepath, delimiter = '\t', missing_values = 'nan', max_rows = max_rows)
-    return df[:,0], df[:,1]
+    x, y = np.genfromtxt(filepath, dtype = (float, float), delimiter = '\t', missing_values = 'nan', usecols = (0,1), max_rows = max_rows, unpack = True)
+    return x, y
 def dataTruncator (x, y, xlow = 0, xhigh = np.inf, ylow = 0, yhigh = np.inf, numPoint = np.inf):
     xret = []
     yret = []
