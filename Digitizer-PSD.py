@@ -41,21 +41,25 @@ class dropdownMenus:
     def get(self):
         return self.clicked.get()
 def plotScatterplot():
-    x, y = pp.readExport(inFile.get(), max_rows = 1.2e6)
+    global truncate
+    x, y = pp.readExport(inFile.get(), max_rows = 1.0e6)
     if a_const.get() and b_const.get():
         a = float(a_const.get())
         b = float(b_const.get())
         x = a*x + b
-    x, y = pp.dataTruncator(x, y, xlow = float(Min_x.get()), xhigh = float(Max_x.get()), ylow = float(Min_y.get()), yhigh = float(Max_y.get()), numPoint = 1e6)
+    if truncate:
+        x, y = pp.dataTruncator(x, y, xlow = float(Min_x.get()), xhigh = float(Max_x.get()), ylow = float(Min_y.get()), yhigh = float(Max_y.get()))
     pp.density_scatter(x, y, xlow = float(Min_x.get()), xhigh = float(Max_x.get()), ylow = float(Min_y.get()), yhigh = float(Max_y.get()), bins = [1000,1000], xlabel = x_name.get(), ylabel = y_name.get())
 def plotHist():
+    global truncate
     filename = filedialog.asksaveasfilename(initialdir = "/", title = "Save histogram to", filetypes=(("Text files","*.txt"), ("All files","*.*")))
     x, y = pp.readExport(inFile.get())
     if a_const.get() and b_const.get():
         a = float(a_const.get())
         b = float(b_const.get())
         x = a*x + b
-    x, y = pp.dataTruncator(x, y, xlow = float(Min_x.get()), xhigh = float(Max_x.get()), ylow = float(Min_y.get()), yhigh = float(Max_y.get()))    
+    if truncate:
+        x, y = pp.dataTruncator(x, y, xlow = float(Min_x.get()), xhigh = float(Max_x.get()), ylow = float(Min_y.get()), yhigh = float(Max_y.get()))    
     auto = True if autobinning.get() == 'Yes' else False
     if quantity.get() == 'Pulse Height':
         pp.buildHist(x, filename, minVal = float(Min_x.get()), maxVal = float(Max_x.get()), noOfBins = int(noOfBins.get()), auto = auto, plot = True, save = True)
@@ -72,6 +76,9 @@ def clear_all():
     a_const.clear()
     b_const.clear()
     noOfBins.clear()
+def truncate_change():
+    global truncate
+    truncate = not truncate
 if __name__ == '__main__':
     # Create the window
     root = Tk()
@@ -88,13 +95,15 @@ if __name__ == '__main__':
     titleLabel2 = Label(f2, text = "PSD scatterplot and histogram plotting", padx = 10, pady=10)
     inFile = fileDialogButtons(f2, label = 'Input file:', width = 125)
 
-    range_controls = LabelFrame(f2, text = 'Range controls', padx = 5, pady =25)
+    range_controls = LabelFrame(f2, text = 'Range controls', padx = 5, pady =10)
     Min_x = labelledFields(range_controls, label = 'Minimum PH:')
     Max_x = labelledFields(range_controls, label = 'Maximum PH:')
     Min_y = labelledFields(range_controls, label = 'Minimum PSD:')
     Max_y = labelledFields(range_controls, label = 'Maximum PSD:')
+    truncate = BooleanVar(value = True)
+    check_truncate = Checkbutton(range_controls, text = 'Truncate raw data to range?', command = truncate_change, variable = truncate)
     
-    spectrum_controls = LabelFrame(f2, text = 'Further histogram building controls', padx = 22, pady = 5)
+    spectrum_controls = LabelFrame(f2, text = 'Further histogram building controls', padx = 20, pady =10)
     quantity = dropdownMenus(spectrum_controls, label = "Quantity:", options = ("Pulse Height", "PSD"))
     autobinning = dropdownMenus(spectrum_controls, label = 'Auto-binning:', options = ("No", "Yes"))
     noOfBins = labelledFields(spectrum_controls, label = 'Number of bins:')
@@ -124,8 +133,9 @@ if __name__ == '__main__':
     Max_x.place(row = 0, column = 1)
     Min_y.place(row = 1, column = 0)
     Max_y.place(row = 1, column = 1)
+    check_truncate.grid(row =2, column =0, columnspan = 2, pady = 5)
     
-    spectrum_controls.grid(row = 2, column = 1, columnspan = 2, padx = 5 ,pady = 10)
+    spectrum_controls.grid(row = 2, column = 1, columnspan = 2, padx = 2 ,pady = 10)
     quantity.place(row = 0, column = 0)
     autobinning.place(row = 0, column =1)
     noOfBins.place(row=0, column =2)
