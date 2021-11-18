@@ -42,7 +42,7 @@ class dropdownMenus:
         return self.clicked.get()
 def plotScatterplot():
     global truncate
-    x, y = pp.readExport(inFile.get(), max_rows = 1.0e6)
+    x, y = pp.readExport(inFile2.get(), max_rows = 1.0e6)
     if a_const.get() and b_const.get():
         a = float(a_const.get())
         b = float(b_const.get())
@@ -52,8 +52,8 @@ def plotScatterplot():
     pp.density_scatter(x, y, xlow = float(Min_x.get()), xhigh = float(Max_x.get()), ylow = float(Min_y.get()), yhigh = float(Max_y.get()), bins = [1000,1000], xlabel = x_name.get(), ylabel = y_name.get())
 def plotHist():
     global truncate
-    filename = filedialog.asksaveasfilename(initialdir = "/", title = "Save histogram to", filetypes=(("Text files","*.txt"), ("All files","*.*")))
-    x, y = pp.readExport(inFile.get())
+    filename = filedialog.asksaveasfilename(initialdir = "/", title = "Save histogram to", defaultextension = ".txt",filetypes=(("Text files","*.txt"), ("All files","*.*")))
+    x, y = pp.readExport(inFile2.get())
     if a_const.get() and b_const.get():
         a = float(a_const.get())
         b = float(b_const.get())
@@ -90,10 +90,11 @@ if __name__ == '__main__':
     n.add(f1, text = 'Analyse')
     n.add(f2, text = 'Plot')
     # Tab 1 widgets
-    
+    titleLabel1 = Label(f1, text = "Pulse height and pulse shape discrimination analysis - charge comparison method", padx = 10, pady=10)
+    inFile1 = fileDialogButtons(f1, label = 'Input file/folder:', width = 125)
     # Tab 2 widgets
     titleLabel2 = Label(f2, text = "PSD scatterplot and histogram plotting", padx = 10, pady=10)
-    inFile = fileDialogButtons(f2, label = 'Input file:', width = 125)
+    inFile2 = fileDialogButtons(f2, label = 'Input file:', width = 125)
 
     range_controls = LabelFrame(f2, text = 'Range controls', padx = 5, pady =10)
     Min_x = labelledFields(range_controls, label = 'Minimum PH:')
@@ -123,10 +124,11 @@ if __name__ == '__main__':
     # Place widgets
     n.grid(row = 0, column = 0)
     # Tab 1 widgets placement
-    
+    titleLabel1.grid(row = 0, column = 0)
+    inFile1.place(row = 1, column = 0, columnspan = 2)
     # Tab 2 widgets placement
     titleLabel2.grid(row = 0, column = 0)
-    inFile.place(row = 1, column = 0, columnspan = 2)
+    inFile2.place(row = 1, column = 0, columnspan = 2)
     
     range_controls.grid(row=2, column = 0, rowspan = 2, pady= 10)
     Min_x.place(row = 0, column = 0)
