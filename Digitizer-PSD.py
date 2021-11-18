@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import ttk
 from tkinter import filedialog
 import postprocess as pp
 
@@ -76,34 +77,46 @@ if __name__ == '__main__':
     root = Tk()
     root.title("Digitizer PSD analysis")
     # Create widgets
-    titleLabel = Label(root, text = "PSD scatterplot and histogram plotting", padx = 10, pady=10)
-    inFile = fileDialogButtons(root, label = 'Input file:', width = 125)
+    n = ttk.Notebook(root)
+    f1 = ttk.Frame(n)
+    f2 = ttk.Frame(n)
+    n.add(f1, text = 'Analyse')
+    n.add(f2, text = 'Plot')
+    # Tab 1 widgets
     
-    range_controls = LabelFrame(root, text = 'Range controls', padx = 5, pady =25)
+    # Tab 2 widgets
+    titleLabel2 = Label(f2, text = "PSD scatterplot and histogram plotting", padx = 10, pady=10)
+    inFile = fileDialogButtons(f2, label = 'Input file:', width = 125)
+
+    range_controls = LabelFrame(f2, text = 'Range controls', padx = 5, pady =25)
     Min_x = labelledFields(range_controls, label = 'Minimum PH:')
     Max_x = labelledFields(range_controls, label = 'Maximum PH:')
     Min_y = labelledFields(range_controls, label = 'Minimum PSD:')
     Max_y = labelledFields(range_controls, label = 'Maximum PSD:')
     
-    spectrum_controls = LabelFrame(root, text = 'Further histogram building controls', padx = 22, pady = 5)
+    spectrum_controls = LabelFrame(f2, text = 'Further histogram building controls', padx = 22, pady = 5)
     quantity = dropdownMenus(spectrum_controls, label = "Quantity:", options = ("Pulse Height", "PSD"))
     autobinning = dropdownMenus(spectrum_controls, label = 'Auto-binning:', options = ("No", "Yes"))
     noOfBins = labelledFields(spectrum_controls, label = 'Number of bins:')
     
-    plot_options = LabelFrame(root, text = 'Plotting options', padx=5, pady=5)
+    plot_options = LabelFrame(f2, text = 'Plotting options', padx=5, pady=5)
     x_name = labelledFields( plot_options, label = 'x-axis label:')
     y_name = labelledFields( plot_options, label = 'y-axis label:')
 
-    scaling = LabelFrame(root, text = 'Scaling: PH -> A*PH + B', padx = 5, pady = 5)
+    scaling = LabelFrame(f2, text = 'Scaling: PH -> A*PH + B', padx = 5, pady = 5)
     a_const = labelledFields( scaling, label = 'A:')
     b_const = labelledFields( scaling, label = 'B:') 
     
-    scatterplot_button = Button(root, text = 'Plot scatterplot', command = plotScatterplot, padx = 20, pady=20, borderwidth = 5)
-    hist_button = Button(root, text = 'Plot histogram', command = plotHist, padx = 20, pady = 20, borderwidth= 5)
-    clear_button = Button (root, text = 'Clear all', command = clear_all, padx = 20, pady=20, borderwidth = 5)
+    scatterplot_button = Button(f2, text = 'Plot scatterplot', command = plotScatterplot, padx = 20, pady=20, borderwidth = 5)
+    hist_button = Button(f2, text = 'Plot histogram', command = plotHist, padx = 20, pady = 20, borderwidth= 5)
+    clear_button = Button (f2, text = 'Clear all', command = clear_all, padx = 20, pady=20, borderwidth = 5)
     
     # Place widgets
-    titleLabel.grid(row = 0, column = 0)
+    n.grid(row = 0, column = 0)
+    # Tab 1 widgets placement
+    
+    # Tab 2 widgets placement
+    titleLabel2.grid(row = 0, column = 0)
     inFile.place(row = 1, column = 0, columnspan = 2)
     
     range_controls.grid(row=2, column = 0, rowspan = 2, pady= 10)
