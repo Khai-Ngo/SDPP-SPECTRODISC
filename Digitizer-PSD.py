@@ -17,6 +17,9 @@ class labelledFields:
     def clear(self):
         self.Field.delete(0, END)
 class fileDialogButtons (labelledFields):
+    """
+    Object variables area: title, filetypes, Button, and txtboxspan
+    """
     def __init__(self, frame, label,  title = "Select a file", filetypes=(("Text files","*.txt"), ("All files","*.*")), padx = 5, pady = 5, width = 10, borderwidth = 5):
         labelledFields.__init__(self, frame, label, padx = 5, pady = 5, width = width, borderwidth = borderwidth)
         self.title = title
@@ -26,9 +29,31 @@ class fileDialogButtons (labelledFields):
         filename = filedialog.askopenfilename(initialdir = "/", title = self.title, filetypes= self.filetypes)
         self.Field.delete(0, END)
         self.Field.insert(0, filename)
+    def open_folder(self):
+        foldername = filedialog.askdirectory(initialdir = "/", title = self.title, mustexist = True)
+        self.Field.delete(0, END)
+        self.Field.insert(0, foldername) 
     def place(self, row, column, columnspan = 1, txtboxspan = 1):
         labelledFields.place(self, row = row, column = column, columnspan = columnspan, txtboxspan = txtboxspan)
         self.Button.grid(row = 0, column = 1+txtboxspan)
+        self.txtboxspan = txtboxspan
+    def update_folder_input(self, title):
+        """
+        Change what the dialog button opens. Now it takes in folder instead
+        Never call this function before object.place has been called at least once before (such that self.txtboxspan is defined)
+        """
+        self.title =title
+        self.Button = Button(self.Frame, text ="...", command = self.open_folder)
+        self.Button.grid(row = 0, column = 1+self.txtboxspan)
+    def update_file_input(self, title, filetypes):
+        """
+        Change what the dialog button opens. Now it takes in single files, and may take in other filetypes too. 
+        Never call this function before object.place has been called at least once before (such that self.txtboxspan is defined)
+        """
+        self.title = title
+        self.filetypes = filetypes
+        self.Button = Button(self.Frame, text = "...", command = self.open_file)
+        self.Button.grid(row = 0, column = 1+self.txtboxspan)
 class dropdownMenus:
     def __init__(self, frame, label, options, padx = 5, pady = 5):
         self.Frame = LabelFrame(frame, padx=padx, pady=pady)
@@ -78,6 +103,12 @@ def clear_all():
     a_const.clear()
     b_const.clear()
     noOfBins.clear()
+def multi_checkbox_command(flag):
+    global inFile1
+    if flag:
+        inFile1.update_folder_input(title="Select a folder")
+    else:
+        inFile1.update_file_input(title = "Select a file", filetypes = (("Data files","*.dat"), ("All files","*.*")))
 if __name__ == '__main__':
     # Create the window
     root = Tk()
@@ -91,8 +122,8 @@ if __name__ == '__main__':
     # Tab 1 widgets
     titleLabel1 = Label(f1, text = "Pulse height and pulse shape discrimination analysis - charge comparison method", padx = 10, pady=10)
     inFile1 = fileDialogButtons(f1, label = 'Input data:', filetypes = (("Data files","*.dat"), ("All files","*.*")),width = 125)
-    multi = IntVar(value = 1)
-    multi_checkbox = Checkbutton(f1, text = 'Choose folder instead?', variable = multi) 
+    multi = IntVar(value = 0)
+    multi_checkbox = Checkbutton(f1, text = 'Choose folder instead?', command = lambda: multi_checkbox_command(multi.get()), variable = multi) 
     # Tab 2 widgets
     titleLabel2 = Label(f2, text = "PSD scatterplot and histogram plotting", padx = 10, pady=10)
     inFile2 = fileDialogButtons(f2, label = 'Input file:', width = 125)
