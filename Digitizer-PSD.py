@@ -43,6 +43,7 @@ class fileDialogButtons (labelledFields):
         Never call this function before object.place has been called at least once before (such that self.txtboxspan is defined)
         """
         self.title =title
+        self.Button.grid_forget()
         self.Button = Button(self.Frame, text ="...", command = self.open_folder)
         self.Button.grid(row = 0, column = 1+self.txtboxspan)
     def update_file_input(self, title, filetypes):
@@ -52,6 +53,7 @@ class fileDialogButtons (labelledFields):
         """
         self.title = title
         self.filetypes = filetypes
+        self.Button.grid_forget()
         self.Button = Button(self.Frame, text = "...", command = self.open_file)
         self.Button.grid(row = 0, column = 1+self.txtboxspan)
 class dropdownMenus:
@@ -123,7 +125,18 @@ if __name__ == '__main__':
     titleLabel1 = Label(f1, text = "Pulse height and pulse shape discrimination analysis - charge comparison method", padx = 10, pady=10)
     inFile1 = fileDialogButtons(f1, label = 'Input data:', filetypes = (("Data files","*.dat"), ("All files","*.*")),width = 125)
     multi = IntVar(value = 0)
-    multi_checkbox = Checkbutton(f1, text = 'Choose folder instead?', command = lambda: multi_checkbox_command(multi.get()), variable = multi) 
+    multi_checkbox = Checkbutton(f1, text = 'Choose folder instead?', command = lambda: multi_checkbox_command(multi.get()), variable = multi)
+    sub_notebook = ttk.Notebook(f1)
+    meth1_frame = ttk.Frame(sub_notebook)
+    meth2_frame = ttk.Frame(sub_notebook)
+    sub_notebook.add(meth1_frame, text = 'Qlong/Qshort')
+    sub_notebook.add(meth2_frame, text = 'W2/(W1+W2)')
+    
+    digitizer_box1 = dropdownMenus(meth1_frame, label = "Digitizer:", options = ("CAEN_10_bit", "CAEN_14_bit","PicoScope5444_V3"), padx = 49)
+    threshold_box1= labelledFields(meth1_frame, label = 'Threshold (depends on digitizer):')
+    shift_back1 = labelledFields(meth1_frame, label = 'Shiftback (ns) - optional:')
+    longGate_box = labelledFields(meth1_frame, label = 'Long gate (ns):',padx = 52)
+    shortGate_box = labelledFields(meth1_frame, label = 'Short gate (ns):',padx = 30)
     # Tab 2 widgets
     titleLabel2 = Label(f2, text = "PSD scatterplot and histogram plotting", padx = 10, pady=10)
     inFile2 = fileDialogButtons(f2, label = 'Input file:', width = 125)
@@ -159,6 +172,13 @@ if __name__ == '__main__':
     titleLabel1.grid(row = 0, column = 0)
     inFile1.place(row = 1, column = 0, columnspan = 2)
     multi_checkbox.grid(row = 1, column = 2)
+    sub_notebook.grid(row = 2, column = 0, pady = 20)
+
+    digitizer_box1.place(row = 0, column = 0)
+    threshold_box1.place(row = 1, column = 0)
+    shift_back1.place(row = 1, column = 1)
+    longGate_box.place(row = 2, column = 0)
+    shortGate_box.place(row = 2, column = 1)
     # Tab 2 widgets placement
     titleLabel2.grid(row = 0, column = 0)
     inFile2.place(row = 1, column = 0, columnspan = 2)
