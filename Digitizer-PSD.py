@@ -111,6 +111,10 @@ def multi_checkbox_command(flag):
         inFile1.update_folder_input(title="Select a folder")
     else:
         inFile1.update_file_input(title = "Select a file", filetypes = (("Data files","*.dat"), ("All files","*.*")))
+def analyse_button1():
+    return
+def analyse_button2():
+    return
 if __name__ == '__main__':
     # Create the window
     root = Tk()
@@ -132,11 +136,20 @@ if __name__ == '__main__':
     sub_notebook.add(meth1_frame, text = 'Qlong/Qshort')
     sub_notebook.add(meth2_frame, text = 'W2/(W1+W2)')
     
-    digitizer_box1 = dropdownMenus(meth1_frame, label = "Digitizer:", options = ("CAEN_10_bit", "CAEN_14_bit","PicoScope5444_V3"), padx = 49)
+    digitizer_box1 = dropdownMenus(meth1_frame, label = "Digitizer:", options = ("CAEN_10_bit", "CAEN_14_bit","PicoScope5444_V3"), padx = 160)
     threshold_box1= labelledFields(meth1_frame, label = 'Threshold (depends on digitizer):')
     shift_back1 = labelledFields(meth1_frame, label = 'Shiftback (ns) - optional:')
     longGate_box = labelledFields(meth1_frame, label = 'Long gate (ns):',padx = 52)
     shortGate_box = labelledFields(meth1_frame, label = 'Short gate (ns):',padx = 30)
+    analyse1 = Button(meth1_frame, text = 'Analyse', command = analyse_button1, padx = 220, pady= 10)
+
+    digitizer_box2 = dropdownMenus(meth2_frame, label = "Digitizer:", options = ("CAEN_10_bit", "CAEN_14_bit","PicoScope5444_V3"), padx = 160)
+    threshold_box2= labelledFields(meth2_frame, label = 'Threshold (depends on digitizer):')
+    shift_back2 = labelledFields(meth2_frame, label = 'Shiftback (ns) - optional:')
+    W1_box = labelledFields(meth2_frame, label = 'W1 (ns):',padx = 70)
+    delay_box = labelledFields(meth2_frame, label = 'Delay (ns):',padx = 65)
+    W2_box = labelledFields(meth2_frame, label = 'W2 (ns)', padx = 50)
+    analyse2 = Button(meth2_frame, text = 'Analyse', command = analyse_button2, padx = 85, pady= 8)
     # Tab 2 widgets
     titleLabel2 = Label(f2, text = "PSD scatterplot and histogram plotting", padx = 10, pady=10)
     inFile2 = fileDialogButtons(f2, label = 'Input file:', width = 125)
@@ -165,7 +178,6 @@ if __name__ == '__main__':
     scatterplot_button = Button(f2, text = 'Plot scatterplot', command = plotScatterplot, padx = 20, pady=20, borderwidth = 5)
     hist_button = Button(f2, text = 'Plot histogram', command = plotHist, padx = 20, pady = 20, borderwidth= 5)
     clear_button = Button (f2, text = 'Clear all', command = clear_all, padx = 20, pady=20, borderwidth = 5)
-    
     # Place widgets
     n.grid(row = 0, column = 0)
     # Tab 1 widgets placement
@@ -174,11 +186,20 @@ if __name__ == '__main__':
     multi_checkbox.grid(row = 1, column = 2)
     sub_notebook.grid(row = 2, column = 0, pady = 20)
 
-    digitizer_box1.place(row = 0, column = 0)
+    digitizer_box1.place(row = 0, column = 0, columnspan = 2)
     threshold_box1.place(row = 1, column = 0)
     shift_back1.place(row = 1, column = 1)
     longGate_box.place(row = 2, column = 0)
     shortGate_box.place(row = 2, column = 1)
+    analyse1.grid(row = 3, column = 0, columnspan = 2)
+
+    digitizer_box2.place(row = 0, column = 0, columnspan = 2)
+    threshold_box2.place(row = 1, column = 0)
+    shift_back2.place(row = 1, column = 1)
+    W1_box.place(row = 2, column = 0)
+    W2_box.place(row = 2, column = 1)
+    delay_box.place(row = 3, column = 0)
+    analyse2.grid(row = 3, column = 1)
     # Tab 2 widgets placement
     titleLabel2.grid(row = 0, column = 0)
     inFile2.place(row = 1, column = 0, columnspan = 2)
