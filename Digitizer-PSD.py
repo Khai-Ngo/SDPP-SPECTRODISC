@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog
 import postprocess as pp
+import analysis
 
 class labelledFields:
     def __init__(self, frame, label, padx = 5, pady = 5, width = 10, borderwidth = 5):
@@ -112,9 +113,28 @@ def multi_checkbox_command(flag):
     else:
         inFile1.update_file_input(title = "Select a file", filetypes = (("Data files","*.dat"), ("All files","*.*")))
 def analyse_button1():
-    return
+    short = int(shortGate_box.get())
+    long = int(longGate_box.get())
+    thres = int(threshold_box1.get())
+    shift = int(shift_back1.get())
+    if digitizer_box1.get() == "CAEN_10_bit":
+        analyse.CAEN(mode = 1, threshold = thres, shiftback = shift, shortGate = short, longGate = long)
+    elif digitizer_box1.get() == "CAEN_14_bit":
+        analyse.CAEN(mode = 1, threshold = thres, shiftback = int(shift/2), shortGate = int(short/2), longGate = int(long/2))
+    else: #last option is obviously "PicoScope5444_V3"
+        analyse.Pico(mode = 1, threshold = thres, shiftback = shift, shortGate = short, longGate = long)
 def analyse_button2():
-    return
+    W1 = int(W1_box.get())
+    W2 = int(W2_box.get())
+    delay = int(delay_box.get())
+    thres = int(threshold_box2.get())
+    shift = int(shift_back2.get())
+    if digitizer_box1.get() == "CAEN_10_bit":
+        analyse.CAEN(mode = 2, threshold = thres, shiftback = shift, W1 = W1, W2 = W2, delay = delay)
+    elif digitizer_box1.get() == "CAEN_14_bit":
+        analyse.CAEN(mode = 2, threshold = thres, shiftback = int(shift/2), W1 = W1/2, W2 = W2/2, delay = delay/2)
+    else: #last option is obviously "PicoScope5444_V3"
+        analyse.Pico(mode = 2, threshold = thres, shiftback = shift, W1 = W1, W2 = W2, delay = delay)
 if __name__ == '__main__':
     # Create the window
     root = Tk()
@@ -136,16 +156,16 @@ if __name__ == '__main__':
     sub_notebook.add(meth1_frame, text = 'Qlong/Qshort')
     sub_notebook.add(meth2_frame, text = 'W2/(W1+W2)')
     
-    digitizer_box1 = dropdownMenus(meth1_frame, label = "Digitizer:", options = ("CAEN_10_bit", "CAEN_14_bit","PicoScope5444_V3"), padx = 160)
+    digitizer_box1 = dropdownMenus(meth1_frame, label = "Digitizer:", options = ("CAEN_10_bit", "CAEN_14_bit","PicoScope5444_V3"), padx = 145)
     threshold_box1= labelledFields(meth1_frame, label = 'Threshold (depends on digitizer):')
-    shift_back1 = labelledFields(meth1_frame, label = 'Shiftback (ns) - optional:')
+    shift_back1 = labelledFields(meth1_frame, label = 'Shiftback (samples):', padx = 17)
     longGate_box = labelledFields(meth1_frame, label = 'Long gate (ns):',padx = 52)
     shortGate_box = labelledFields(meth1_frame, label = 'Short gate (ns):',padx = 30)
     analyse1 = Button(meth1_frame, text = 'Analyse', command = analyse_button1, padx = 220, pady= 10)
 
-    digitizer_box2 = dropdownMenus(meth2_frame, label = "Digitizer:", options = ("CAEN_10_bit", "CAEN_14_bit","PicoScope5444_V3"), padx = 160)
+    digitizer_box2 = dropdownMenus(meth2_frame, label = "Digitizer:", options = ("CAEN_10_bit", "CAEN_14_bit","PicoScope5444_V3"), padx = 145)
     threshold_box2= labelledFields(meth2_frame, label = 'Threshold (depends on digitizer):')
-    shift_back2 = labelledFields(meth2_frame, label = 'Shiftback (ns) - optional:')
+    shift_back2 = labelledFields(meth2_frame, label = 'Shiftback (samples):', padx = 17)
     W1_box = labelledFields(meth2_frame, label = 'W1 (ns):',padx = 70)
     delay_box = labelledFields(meth2_frame, label = 'Delay (ns):',padx = 65)
     W2_box = labelledFields(meth2_frame, label = 'W2 (ns)', padx = 50)
@@ -186,7 +206,7 @@ if __name__ == '__main__':
     multi_checkbox.grid(row = 1, column = 2)
     sub_notebook.grid(row = 2, column = 0, pady = 20)
 
-    digitizer_box1.place(row = 0, column = 0, columnspan = 2)
+    digitizer_box1.place(row = 0, column = 0, columnspan = 2, boxspan = 2)
     threshold_box1.place(row = 1, column = 0)
     shift_back1.place(row = 1, column = 1)
     longGate_box.place(row = 2, column = 0)
