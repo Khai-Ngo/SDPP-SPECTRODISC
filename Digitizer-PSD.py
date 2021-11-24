@@ -113,28 +113,38 @@ def multi_checkbox_command(flag):
     else:
         inFile1.update_file_input(title = "Select a file", filetypes = (("Data files","*.dat"), ("All files","*.*")))
 def analyse_button1():
+    outFile = filedialog.asksaveasfilename(initialdir = "/", title = "Save output to", defaultextension = ".txt",filetypes=(("Text files","*.txt"), ("All files","*.*")))
+    fname = inFile1.get()
     short = int(shortGate_box.get())
     long = int(longGate_box.get())
     thres = int(threshold_box1.get())
     shift = int(shift_back1.get())
     if digitizer_box1.get() == "CAEN_10_bit":
-        analyse.CAEN(mode = 1, threshold = thres, shiftback = shift, shortGate = short, longGate = long)
+        #analyse.CAEN(fname = fname, output = outFile, mode = 1, threshold = thres, shiftback = shift, shortGate = short, longGate = long)
+        pass
     elif digitizer_box1.get() == "CAEN_14_bit":
-        analyse.CAEN(mode = 1, threshold = thres, shiftback = int(shift/2), shortGate = int(short/2), longGate = int(long/2))
+        #analyse.CAEN(fname = fname, output = outFile, mode = 1, threshold = thres, shiftback = int(shift/2), shortGate = int(short/2), longGate = int(long/2))
+        pass
     else: #last option is obviously "PicoScope5444_V3"
-        analyse.Pico(mode = 1, threshold = thres, shiftback = shift, shortGate = short, longGate = long)
+        #analyse.Pico(fname = fname, output = outFile, mode = 1, threshold = thres, shiftback = shift, shortGate = short, longGate = long)
+        pass
 def analyse_button2():
+    outFile = filedialog.asksaveasfilename(initialdir = "/", title = "Save output to", defaultextension = ".txt",filetypes=(("Text files","*.txt"), ("All files","*.*")))
+    fname = inFile1.get()
     W1 = int(W1_box.get())
     W2 = int(W2_box.get())
     delay = int(delay_box.get())
     thres = int(threshold_box2.get())
     shift = int(shift_back2.get())
     if digitizer_box1.get() == "CAEN_10_bit":
-        analyse.CAEN(mode = 2, threshold = thres, shiftback = shift, W1 = W1, W2 = W2, delay = delay)
+        #analyse.CAEN(fname = fname, output = outFile, mode = 2, threshold = thres, shiftback = shift, W1 = W1, W2 = W2, delay = delay)
+        pass
     elif digitizer_box1.get() == "CAEN_14_bit":
-        analyse.CAEN(mode = 2, threshold = thres, shiftback = int(shift/2), W1 = W1/2, W2 = W2/2, delay = delay/2)
+        #analyse.CAEN(fname =fname, output = outFile, mode = 2, threshold = thres, shiftback = int(shift/2), W1 = W1/2, W2 = W2/2, delay = delay/2)
+        pass
     else: #last option is obviously "PicoScope5444_V3"
-        analyse.Pico(mode = 2, threshold = thres, shiftback = shift, W1 = W1, W2 = W2, delay = delay)
+        #analyse.Pico(fname = fname, output = outFile, mode = 2, threshold = thres, shiftback = shift, W1 = W1, W2 = W2, delay = delay)
+        pass
 if __name__ == '__main__':
     # Create the window
     root = Tk()
