@@ -149,16 +149,3 @@ if __name__ == '__main__':
     areaArray.clear()
     ratioArray.clear()
     tArr.clear()
-
-
-
-
-
-
-    
-
-
-        
-        
-
-
