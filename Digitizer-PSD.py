@@ -111,7 +111,7 @@ def multi_checkbox_command(flag):
     if flag:
         inFile1.update_folder_input(title="Select a folder")
     else:
-        inFile1.update_file_input(title = "Select a file", filetypes = (("Data files","*.dat"), ("All files","*.*")))
+        inFile1.update_file_input(title = "Select a file", filetypes = (("DAT files","*.dat"), ("TRACES files", "*.traces"),("All files","*.*")))
 def analyse_button1():
     outFile = filedialog.asksaveasfilename(initialdir = "/", title = "Save output to", defaultextension = ".txt",filetypes=(("Text files","*.txt"), ("All files","*.*")))
     fname = inFile1.get()
@@ -154,7 +154,7 @@ if __name__ == '__main__':
     n.add(f2, text = 'Plot')
     # Tab 1 widgets
     titleLabel1 = Label(f1, text = "Pulse height and pulse shape discrimination analysis - charge comparison method", padx = 10, pady=10)
-    inFile1 = fileDialogButtons(f1, label = 'Input data:', filetypes = (("Data files","*.dat"), ("All files","*.*")),width = 125)
+    inFile1 = fileDialogButtons(f1, label = 'Input data:', filetypes = (("DAT files","*.dat"), ("TRACES files", "*.traces"),("All files","*.*")),width = 125)
     multi = IntVar(value = 0)
     multi_checkbox = Checkbutton(f1, text = 'Choose folder instead?', command = lambda: multi_checkbox_command(multi.get()), variable = multi)
     sub_notebook = ttk.Notebook(f1)
