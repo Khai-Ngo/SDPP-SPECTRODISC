@@ -65,5 +65,9 @@ def density_scatter( x , y, ax = None, xlow = 0, xhigh = 16000, ylow = 1, yhigh 
     cbar.ax.set_ylabel('Density')
     ax.set_xlabel(xlabel, fontsize = fontsize)
     ax.set_ylabel(ylabel, fontsize = fontsize)
+    # configure grid and minor ticks
+    ax.grid(visible = True)
+    ax.yaxis.get_ticklocs(minor=True)
+    ax.minorticks_on()
     plt.show()
     return ax
