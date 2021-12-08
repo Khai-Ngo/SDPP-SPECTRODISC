@@ -127,7 +127,7 @@ def analyse_button1():
     fname = inFile1.get()
     short = int(shortGate_box.get())
     long = int(longGate_box.get())
-    thres = int(threshold_box1.get())
+    thres = int(threshold_box1.get()) if threshold_box1.get() else 0 # default value
     shift = int(shift_back1.get())
     if digitizer_box1.get() == "CAEN_10_bit":
         analysis.CAEN(fname = fname, output = outFile, mode = 1, threshold = thres, pregate = shift, shortGate = short, longGate = long)
@@ -143,7 +143,7 @@ def analyse_button2():
     W1 = int(W1_box.get())
     W2 = int(W2_box.get())
     delay = int(delay_box.get())
-    thres = int(threshold_box2.get())
+    thres = int(threshold_box2.get()) if threshold_box2.get() else 0 #defaut value
     shift = int(shift_back2.get())
     allGate = int(allGate_box.get())
     if digitizer_box2.get() == "CAEN_10_bit":
