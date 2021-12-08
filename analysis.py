@@ -97,7 +97,7 @@ def CAEN(fname, output, mode, threshold, pregate, **kwargs):
         analyse = pulseAreaCLYC
     else:
         raise ValueError('Invalid mode. Valid modes are 1 or 2')
-    # fname coukd either be a file or a folder
+    # fname could either be a file or a folder
     fileList = [fname + "\\" + name for name in sorted_alphanumeric(os.listdir(fname))] if os.path.isdir(fname) else [fname]   
     for a_file in fileList:
         if a_file.endswith(".dat"):
@@ -130,11 +130,85 @@ def CAEN(fname, output, mode, threshold, pregate, **kwargs):
             print("Total number of accepted pulse: {}\n".format(len(areaArray)))
             save(areaArray, ratioArray, tArr, output) # save leftovers
     print("Analysis complete!\n")
-def Pico(fname, outpupt, mode, threshold, pregate, **kwargs):
-    return
+def Pico(fname, output, mode, pregate, **kwargs): # no need for threshold variable because the traces file saves the trigger level used during DAQ
+    # initialise variables
+    areaArray, ratioArray, tArr = [], [], []
+    # select correct analysis method
+    if mode == 1:
+        analyse = pulseAreaEJ276
+    elif mode == 2:
+        analyse = pulseAreaCLYC
+    else:
+        raise ValueError('Invalid mode. Valid modes are 1 or 2')
+    # fname coukd either be a file or a folder
+    fileList = [fname + "\\" + name for name in sorted_alphanumeric(os.listdir(fname))] if os.path.isdir(fname) else [fname]   
+    for a_file in fileList:
+        if a_file.endswith(".traces"):
+            with open(a_file, 'rb') as file:
+                print("Reading from {}".format(a_file))
+                # Read overall header
+                # Read Picoscope version (Note that the rest of the code assumes that digitizer is Picoscope-5444-V3)
+                progVersionStrlen = struct.unpack('=I',file.read(4))[0] #length of version string (Int32)
+                buffer = struct.unpack(f'={progVersionStrlen}c', file.read(progVersionStrlen))
+                progVersionStr = ''.join([byte.decode('utf-8') for byte in buffer])
+                # Read the comment that the user has entered as description of the run
+                runDescriptionStrlen = struct.unpack('=I', file.read(4))[0]
+                buffer = struct.unpack(f'{runDescriptionStrlen}c', file.read(runDescriptionStrlen))
+                runDescriptionStr =  ''.join([byte.decode('utf-8') for byte in buffer])
+                # Read the resolution for V3 syntax or higher
+                resolution = struct.unpack('=I', file.read(4))[0]
+                # Read channel information i.e. scale factor, offset, sampling interval and record length
+                NbrChannels = struct.unpack('=I', file.read(4))[0]
+                ChanEnabled = [buffer for buffer in struct.unpack(f'={NbrChannels}?', file.read(NbrChannels))]
+                VoltsScaleFact = [buffer for buffer in struct.unpack(f'={NbrChannels}d', file.read(NbrChannels*8))]
+                ChanOffsetVolts = [buffer for buffer in struct.unpack(f'={NbrChannels}d', file.read(NbrChannels*8))]
+                SampInterval, NbrSamples = struct.unpack('=dI', file.read(12))
+                # Read trigger information
+                # Trigger slope: 0 = Above, 1 = Below, 2 = Rising, 3 = Falling, 4 = RisingOrFalling. Other trigger modes are not (yet) supported.
+                # External trig info is stored on separate set of variables
+                TriggerEnabled = [buffer for buffer in struct.unpack(f'={NbrChannels}?', file.read(NbrChannels))]
+                ExtTrigEnabled = struct.unpack('=?', file.read(1))[0]
+                TriggerLevel = [buffer for buffer in struct.unpack(f'={NbrChannels}d', file.read(NbrChannels*8))]
+                ExtTrigLevel = struct.unpack('=d', file.read(8))[0]
+                TriggerSlope = [buffer for buffer in struct.unpack(f'={NbrChannels}I', file.read(NbrChannels*4))]
+                ExtTrigSlope = struct.unpack('=I', file.read(4))[0]
+                # Continuously read and process events. Assumption: only 1 channel is saved
+                while True:        
+                    # read event header
+                    buffer = file.read(16)
+                    if not buffer: break #eof exit
+                    # Read index of currrent event, time elasped since start of the run (in seconds), and number of saved traces in this event
+                    CurEvent, eveRunTime, nbrSavedTraces = struct.unpack('=IdI', buffer)
+                    # read which channels the traces were saved to
+                    savedChannels = [buffer for buffer in struct.unpack(f'={NbrChannels}?', file.read(NbrChannels))]
+                    # read trigger offset time in seconds, from start of trace
+                    trigTime = struct.unpack('=d', file.read(8))[0]
+                    # read trace of every saved channel one by one, but it's assumed there's only 1 channel enabled
+                    for i in range(NbrChannels):
+                        if savedChannels[i]:
+                            pulse = struct.unpack(f'={NbrSamples}h', file.read(2*NbrSamples))
+                            pulse = [VoltsScaleFact[i]*elem - ChanOffsetVolts[i] for elem in pulse] 
+                            # analyse the trace here. Again, it's assumed only 1 channel is active
+                            pulse = [-elem for elem in pulse] #baseline is 0 for Picoscope-5444-V3
+                            threshold = -TriggerLevel[i]
+                            if max(pulse) > threshold:
+                                PH, r = analyse(pulse, threshold, pregate, **kwargs)
+                                areaArray.append(PH)
+                                ratioArray.append(r)
+                                tArr.append(eveRunTime)
+                    if CurEvent % 10000 == 0: # save to file every batch of 10k pulses
+                        print('Processed {} pulses'.format(CurEvent))
+                        print('Accepted {} pulses'.format(len(areaArray)))
+                        save(areaArray, ratioArray, tArr, output)
+            # traces file has closed
+            print('Processed {} pulses'.format(CurEvent))
+            print('Accepted {} pulses'.format(len(areaArray)))
+            save(areaArray, ratioArray, tArr, output) # save leftover pulses
+    print("Analysis complete!\n")
 def main():
     # for module testing
     import sys
-    CAEN(sys.argv[1], sys.argv[2], mode = 2, threshold = 10, pregate = 8, allGate = 1800, W1 = 80, W2 = 500, delay = 20) 
+    #CAEN(sys.argv[1], sys.argv[2], mode = 2, threshold = 10, pregate = 8, allGate = 1800, W1 = 80, W2 = 500, delay = 20)
+    Pico(sys.argv[1], sys.argv[2], mode = 1, pregate = int(16/8), shortGate = int(72/8), longGate = int(272/8))
 if __name__ == '__main__':
     main()
