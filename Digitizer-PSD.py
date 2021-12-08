@@ -5,10 +5,10 @@ import postprocess as pp
 import analysis
 
 class labelledFields:
-    def __init__(self, frame, label, padx = 5, pady = 5, width = 10, borderwidth = 5):
+    def __init__(self, frame, label, padx = 5, pady = 5, width = 10):
         self.Frame = LabelFrame(frame, padx=padx, pady=pady)
         self.Label = Label(self.Frame, text = label)
-        self.Field = Entry(self.Frame, width = width, borderwidth = borderwidth)
+        self.Field = ttk.Entry(self.Frame, width = width)
     def place(self, row, column, columnspan=1, txtboxspan = 1):
         self.Frame.grid(row = row, column = column, columnspan = columnspan)
         self.Label.grid(row = 0, column = 0)
@@ -17,12 +17,16 @@ class labelledFields:
         return self.Field.get()
     def clear(self):
         self.Field.delete(0, END)
+    def disable(self):
+        self.Field.state(['disabled'])
+    def enable(self):
+        self.Field.state(['!disabled'])
 class fileDialogButtons (labelledFields):
     """
     Object variables area: title, filetypes, Button, and txtboxspan
     """
-    def __init__(self, frame, label,  title = "Select a file", filetypes=(("Text files","*.txt"), ("All files","*.*")), padx = 5, pady = 5, width = 10, borderwidth = 5):
-        labelledFields.__init__(self, frame, label, padx = 5, pady = 5, width = width, borderwidth = borderwidth)
+    def __init__(self, frame, label,  title = "Select a file", filetypes=(("Text files","*.txt"), ("All files","*.*")), padx = 5, pady = 5, width = 10):
+        labelledFields.__init__(self, frame, label, padx = 5, pady = 5, width = width)
         self.title = title
         self.filetypes = filetypes
         self.Button = Button (self.Frame, text = "...", command = self.open_file)
@@ -62,7 +66,8 @@ class dropdownMenus:
         self.Frame = LabelFrame(frame, padx=padx, pady=pady)
         self.Label = Label(self.Frame, text = label)
         self.clicked = StringVar()
-        self.Menu= OptionMenu(self.Frame, self.clicked, *options)
+        self.Menu= ttk.Combobox(self.Frame, textvariable = self.clicked)
+        self.Menu['values'] = options
         self.clicked.set(options[0])
     def place(self, row, column, columnspan = 1, boxspan = 1):
         self.Frame.grid(row = row, column = column, columnspan = columnspan)
@@ -112,6 +117,11 @@ def multi_checkbox_command(flag):
         inFile1.update_folder_input(title="Select a folder")
     else:
         inFile1.update_file_input(title = "Select a file", filetypes = (("DAT files","*.dat"), ("TRACES files", "*.traces"),("All files","*.*")))
+def callback_digitizer_box(dropDownMenu, labelledField):
+    if dropDownMenu.get() == 'PicoScope5444_V3':
+        labelledField.disable()
+    else:
+        labelledField.enable()
 def analyse_button1():
     outFile = filedialog.asksaveasfilename(initialdir = "/", title = "Save output to", defaultextension = ".txt",filetypes=(("Text files","*.txt"), ("All files","*.*")))
     fname = inFile1.get()
@@ -122,10 +132,11 @@ def analyse_button1():
     if digitizer_box1.get() == "CAEN_10_bit":
         analysis.CAEN(fname = fname, output = outFile, mode = 1, threshold = thres, pregate = shift, shortGate = short, longGate = long)
     elif digitizer_box1.get() == "CAEN_14_bit":
+        # divide by 2 because sampling frequency = 500 MHz (CAEN DT5730)
         analysis.CAEN(fname = fname, output = outFile, mode = 1, threshold = thres, pregate = int(shift/2), shortGate = int(short/2), longGate = int(long/2))
     else: #last option is obviously "PicoScope5444_V3"
-        #analyse.Pico(fname = fname, output = outFile, mode = 1, threshold = thres, pregate = shift, shortGate = short, longGate = long)
-        pass
+        # divide by 8 because sampling frequency = 128 MHz
+        analysis.Pico(fname = fname, output = outFile, mode = 1, pregate = int(shift/8), shortGate = int(short/8), longGate = int(long/8))
 def analyse_button2():
     outFile = filedialog.asksaveasfilename(initialdir = "/", title = "Save output to", defaultextension = ".txt",filetypes=(("Text files","*.txt"), ("All files","*.*")))
     fname = inFile1.get()
@@ -138,10 +149,11 @@ def analyse_button2():
     if digitizer_box2.get() == "CAEN_10_bit":
         analysis.CAEN(fname = fname, output = outFile, mode = 2, threshold = thres, pregate = shift, allGate = allGate, W1 = W1, W2 = W2, delay = delay)
     elif digitizer_box2.get() == "CAEN_14_bit":
+        # divide by 2 because sampling frequency = 500 MHz (CAEN DT5730)
         analysis.CAEN(fname =fname, output = outFile, mode = 2, threshold = thres, pregate = int(shift/2), allGate = int(allGate/2), W1 = int(W1/2), W2 = int(W2/2), delay = int(delay/2))
     else: #last option is obviously "PicoScope5444_V3"
-        #analyse.Pico(fname = fname, output = outFile, mode = 2, threshold = thres, pregate = shift, allGate = allGate, W1 = W1, W2 = W2, delay = delay)
-        pass
+        # divide by 8 because sampling frequency = 128 MHz
+        analysis.Pico(fname = fname, output = outFile, mode = 2, pregate = int(shift/8), allGate = int(allGate/8), W1 = int(W1/8), W2 = int(W2/8), delay = int(delay/8))
 if __name__ == '__main__':
     # Create the window
     root = Tk()
@@ -165,6 +177,7 @@ if __name__ == '__main__':
     
     digitizer_box1 = dropdownMenus(meth1_frame, label = "Digitizer:", options = ("CAEN_10_bit", "CAEN_14_bit","PicoScope5444_V3"), padx = 145)
     threshold_box1= labelledFields(meth1_frame, label = 'Threshold:')
+    digitizer_box1.Menu.bind('<<ComboboxSelected>>', func = lambda event: callback_digitizer_box(digitizer_box1, threshold_box1))
     shift_back1 = labelledFields(meth1_frame, label = 'Pre-gate (ns):', padx = 17)
     longGate_box = labelledFields(meth1_frame, label = 'Long Gate (ns):',padx = 52)
     shortGate_box = labelledFields(meth1_frame, label = 'Short Gate (ns):',padx = 30)
@@ -172,6 +185,7 @@ if __name__ == '__main__':
 
     digitizer_box2 = dropdownMenus(meth2_frame, label = "Digitizer:", options = ("CAEN_10_bit", "CAEN_14_bit","PicoScope5444_V3"), padx = 145)
     threshold_box2= labelledFields(meth2_frame, label = 'Threshold:')
+    digitizer_box2.Menu.bind('<<ComboboxSelected>>', func = lambda event: callback_digitizer_box(digitizer_box2, threshold_box2))
     shift_back2 = labelledFields(meth2_frame, label = 'Pre-gate (ns):', padx = 17)
     W1_box = labelledFields(meth2_frame, label = 'W1 (ns):',padx = 70)
     delay_box = labelledFields(meth2_frame, label = 'Delay (ns):',padx = 65)
@@ -203,9 +217,9 @@ if __name__ == '__main__':
     a_const = labelledFields( scaling, label = 'A:')
     b_const = labelledFields( scaling, label = 'B:') 
     
-    scatterplot_button = Button(f2, text = 'Plot scatterplot', command = plotScatterplot, padx = 20, pady=20, borderwidth = 5)
-    hist_button = Button(f2, text = 'Plot histogram', command = plotHist, padx = 20, pady = 20, borderwidth= 5)
-    clear_button = Button (f2, text = 'Clear all', command = clear_all, padx = 20, pady=20, borderwidth = 5)
+    scatterplot_button = Button(f2, text = 'Plot scatterplot', command = plotScatterplot, padx = 20, pady=20)
+    hist_button = Button(f2, text = 'Plot histogram', command = plotHist, padx = 20, pady = 20)
+    clear_button = Button (f2, text = 'Clear all', command = clear_all, padx = 20, pady=20)
     # Place widgets
     n.grid(row = 0, column = 0)
     # Tab 1 widgets placement
