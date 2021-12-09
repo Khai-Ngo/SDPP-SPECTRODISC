@@ -49,7 +49,7 @@ class fileDialogButtons (labelledFields):
         """
         self.title =title
         self.Button.grid_forget()
-        self.Button = Button(self.Frame, text ="...", command = self.open_folder)
+        self.Button = ttk.Button(self.Frame, text ="...", command = self.open_folder, width = 2)
         self.Button.grid(row = 0, column = 1+self.txtboxspan)
     def update_file_input(self, title, filetypes):
         """
@@ -59,7 +59,7 @@ class fileDialogButtons (labelledFields):
         self.title = title
         self.filetypes = filetypes
         self.Button.grid_forget()
-        self.Button = Button(self.Frame, text = "...", command = self.open_file)
+        self.Button = ttk.Button(self.Frame, text = "...", command = self.open_file, width = 2)
         self.Button.grid(row = 0, column = 1+self.txtboxspan)
 class dropdownMenus:
     def __init__(self, frame, label, options, width = 5, height = 5, padding = "3 3 12 12"):
