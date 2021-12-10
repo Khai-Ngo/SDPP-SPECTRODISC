@@ -22,3 +22,4 @@ Once the user click "Analyse", the software outputs its results in a 3-colummn .
 
 1. Improve GUI: better arrangement of widgets, and add scroll bars
 2. Implement data validation for the input fields to prevent the user from putting in trash data/missing data
+3. Output time trace (counts per second vs seconds)
