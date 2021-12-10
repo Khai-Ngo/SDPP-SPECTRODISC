@@ -15,11 +15,12 @@ There are two charge comparison PSD methods supported: Qlong/Qshort and W2/(W1+W
 
 The user also needs to specify a threshold. Pulses whose maximum is lower than the threshold are not considered, while for the ones that do this determines the start of the integration gate. Often, this point is on the rising edge of the pulse, so a Pre-gate must be specified to shift the start of the gate back to the actual start of the pulse. Please be aware that the value of the threshold depends on the digitizer, so the user should have some knowledge of their DAQ system to pick a suitable number. Usually, picking a number close to the trigger threshold whike acquiring the data is good. There is no need to specify a threshold for PICOSCOPE digitizer since it saves the trigger threshold used during DAQ in its wavedump file. 
 
-Once the user click "Analyse", the software outputs its results in a 3-colummn .txt file. The format is PH-PSD value-Time Stamp. This file can be given as an input to the Plot tab of this software. Here user can truncate their data, plot 2D PSD vs PH scatterplot, plot and output PHS and PSD spectrum. The user can also apply calibration scaling to the raw data, once they're known.  
+Once the user click "Analyse", the software outputs its results in a 3-colummn .txt file. The format is PH-PSD value-Time Stamp. This file can be given as an input to the Plot tab of this software. Here user can select range of interest of the data, plot 2D PSD vs PH scatterplot (applied on the range specified), plot and output PHS and PSD spectrum. The user can also apply calibration factors to the raw PH data (be aware that the range controls for PH should be adjusted accordingly too, if using this).
 
 ### Possible improvements
 
 1. Improve GUI: better arrangement of widgets, and add scroll bars
 2. Implement data validation for the input fields to prevent the user from putting in trash data/missing data
-3. Output time trace (counts per second vs seconds)
-4. Extends support for other detectors (may or may not have PSD capabilities)
+3. Integrate time trace analysis (counts per second vs seconds) into the program (currently used as a separate module)
+4. Integrate pile-up rejection into the program (already implemented in one of the modules) 
+5. Extends support for other detectors (may or may not have PSD capabilities)
