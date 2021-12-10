@@ -1,7 +1,6 @@
 ## Scintillator Digital Pulse Processing for SPECTROscopy and pulse shape DISCrimination (SDPP-SPECTRODISC)
 
-This is a software with GUI that analyses digitized pulses of radiation detectors (e.g. scintillators, diamond detectors, ...) by charge integration. It's mainly a personal project, as it's only a small part in a bigger project during my Year in Industry, which is rather more physics-focused. 
-
+This is a software with GUI that analyses digitized pulses of scintillators by charge integration. It's mainly a personal project, as it's only a small part of a bigger project during my Year in Industry, which is a rather more physics-focused one.
 ### Installation
 [Add something here later]
 ### Background: nuclear spectroscopy and pulse shape discrimination
@@ -23,3 +22,4 @@ Once the user click "Analyse", the software outputs its results in a 3-colummn .
 1. Improve GUI: better arrangement of widgets, and add scroll bars
 2. Implement data validation for the input fields to prevent the user from putting in trash data/missing data
 3. Output time trace (counts per second vs seconds)
+4. Extends support for other detectors (may or may not have PSD capabilities)
