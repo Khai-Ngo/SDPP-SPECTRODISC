@@ -77,7 +77,7 @@ class dropdownMenus:
         return self.clicked.get()
 def plotScatterplot():
     global truncate
-    x, y = pp.readExport(inFile2.get(), max_rows = 1.0e6)
+    x, y = pp.readExport(inFile2.get(), max_rows = 1000000)
     if a_const.get() and b_const.get():
         a = float(a_const.get())
         b = float(b_const.get())

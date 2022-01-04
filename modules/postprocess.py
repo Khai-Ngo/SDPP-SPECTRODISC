@@ -4,8 +4,13 @@ from matplotlib import cm
 from matplotlib.colors import Normalize 
 from scipy.interpolate import interpn
 def readExport (filepath, max_rows = None):
-    x, y = np.genfromtxt(filepath, dtype = (float, float), delimiter = '\t', missing_values = 'nan', usecols = (0,1), max_rows = max_rows, unpack = True)
-    return x, y
+    x, y = [], []
+    with open(filepath, "r") as f:
+        lines = f.readlines()[:max_rows]
+    for line in lines:
+        x.append(float(line.split()[0]))
+        y.append(float(line.split()[1]))
+    return np.array(x), np.array(y)
 def dataTruncator (x, y, xlow = -np.inf, xhigh = np.inf, ylow = -np.inf, yhigh = np.inf, numPoint = np.inf):
     xret = []
     yret = []
