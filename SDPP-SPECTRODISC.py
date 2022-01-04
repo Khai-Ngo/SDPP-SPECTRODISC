@@ -1,8 +1,8 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog
-import postprocess as pp
-import analysis
+from modules import postprocess as pp
+from modules import analysis
 
 class labelledFields:
     def __init__(self, frame, label, width = 10, height = 10, txtwidth = 10, padding = "3 3 12 12"):
