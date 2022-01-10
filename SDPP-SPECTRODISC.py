@@ -10,7 +10,7 @@ class labelledFields:
         self.Label = ttk.Label(self.Frame, text = label)
         self.Field = ttk.Entry(self.Frame, width = txtwidth)
     def place(self, row, column, columnspan=1, txtboxspan = 1):
-        self.Frame.grid(row = row, column = column, columnspan = columnspan)
+        self.Frame.grid(row = row, column = column, columnspan = columnspan, sticky = "W")
         self.Label.grid(row = 0, column = 0)
         self.Field.grid(row = 0, column = 1, columnspan = txtboxspan)
     def get(self):
@@ -62,11 +62,11 @@ class fileDialogButtons (labelledFields):
         self.Button = ttk.Button(self.Frame, text = "...", command = self.open_file, width = 2)
         self.Button.grid(row = 0, column = 1+self.txtboxspan)
 class dropdownMenus:
-    def __init__(self, frame, label, options, width = 5, height = 5, padding = "3 3 12 12"):
-        self.Frame = ttk.Frame(frame, width = width, height = height, padding = padding)
+    def __init__(self, frame, label, options, width = 15, height = 5, padding = "3 3 12 12"):
+        self.Frame = ttk.Frame(frame, height = height, padding = padding)
         self.Label = ttk.Label(self.Frame, text = label)
         self.clicked = StringVar()
-        self.Menu= ttk.Combobox(self.Frame, textvariable = self.clicked)
+        self.Menu= ttk.Combobox(self.Frame, textvariable = self.clicked, width = width)
         self.Menu['values'] = options
         self.clicked.set(options[0])
     def place(self, row, column, columnspan = 1, boxspan = 1):
@@ -157,7 +157,9 @@ def analyse_button2():
 if __name__ == '__main__':
     # Create the window
     root = Tk()
-    root.title("Digitizer PSD analysis")
+    root.title("SDPP-SPECTRODISC")
+    root.geometry("510x420")
+    root.resizable(False, False)
     # Create widgets
     n = ttk.Notebook(root)
     f1 = ttk.Frame(n)
@@ -194,19 +196,19 @@ if __name__ == '__main__':
     analyse2 = ttk.Button(meth2_frame, text = 'Analyse', command = analyse_button2)
     # Tab 2 widgets
     titleLabel2 = ttk.Label(f2, text = "PSD scatterplot and histogram plotting")
-    inFile2 = fileDialogButtons(f2, label = 'Input file:', txtwidth = 125)
+    inFile2 = fileDialogButtons(f2, label = 'Input file:', txtwidth = 70)
 
     range_controls = ttk.LabelFrame(f2, text = 'Range controls')
-    Min_x = labelledFields(range_controls, label = 'Minimum PH:')
-    Max_x = labelledFields(range_controls, label = 'Maximum PH:')
-    Min_y = labelledFields(range_controls, label = 'Minimum PSD:')
-    Max_y = labelledFields(range_controls, label = 'Maximum PSD:')
+    Min_x = labelledFields(range_controls, label = 'Minimum PH:', txtwidth = 24)
+    Max_x = labelledFields(range_controls, label = 'Maximum PH:', txtwidth = 24)
+    Min_y = labelledFields(range_controls, label = 'Minimum PSD:', txtwidth = 23)
+    Max_y = labelledFields(range_controls, label = 'Maximum PSD:', txtwidth = 23)
     truncate = IntVar(value = 1)
     check_truncate = ttk.Checkbutton(range_controls, text = 'Truncate raw data to range?', variable = truncate)
     
     spectrum_controls = ttk.LabelFrame(f2, text = 'Further histogram building controls')
     quantity = dropdownMenus(spectrum_controls, label = "Quantity:", options = ("Pulse Height", "PSD"))
-    autobinning = dropdownMenus(spectrum_controls, label = 'Auto-binning:', options = ("No", "Yes"))
+    autobinning = dropdownMenus(spectrum_controls, width = 5, label = 'Auto-binning:', options = ("No", "Yes"))
     noOfBins = labelledFields(spectrum_controls, label = 'Number of bins:')
     
     plot_options = ttk.LabelFrame(f2, text = 'Plotting options')
@@ -244,31 +246,31 @@ if __name__ == '__main__':
     delay_box.place(row = 3, column = 1)
     analyse2.grid(row = 4, column = 0, columnspan = 2)
     # Tab 2 widgets placement
-    titleLabel2.grid(row = 0, column = 0)
-    inFile2.place(row = 1, column = 0, columnspan = 2)
+    titleLabel2.grid(row = 0, column = 0, columnspan = 3, sticky = "W")
+    inFile2.place(row = 1, column = 0, columnspan = 3)
     
-    range_controls.grid(row=2, column = 0, rowspan = 2)
+    range_controls.grid(row=2, column = 0, columnspan = 3, sticky = "W")
     Min_x.place(row = 0, column = 0)
     Max_x.place(row = 0, column = 1)
     Min_y.place(row = 1, column = 0)
     Max_y.place(row = 1, column = 1)
-    check_truncate.grid(row =2, column =0, columnspan = 2, pady = 5)
+    check_truncate.grid(row =2, column =0, columnspan = 2, pady = 5, sticky = "W")
     
-    spectrum_controls.grid(row = 2, column = 1, columnspan = 2, padx = 2 ,pady = 10)
+    spectrum_controls.grid(row = 3, column = 0, columnspan = 3, padx = 2 ,pady = 10, sticky = "W")
     quantity.place(row = 0, column = 0)
     autobinning.place(row = 0, column =1)
     noOfBins.place(row=0, column =2)
     
-    scaling.grid(row = 3,column = 1, pady = 5 )
+    scaling.grid(row = 4,column = 0, pady = 5, sticky = "W")
     a_const.place(row = 0, column = 0)
     b_const.place(row = 0, column = 1)
 
-    plot_options.grid(row = 3, column = 2,padx = 10, pady = 5)
+    plot_options.grid(row = 4, column = 1,columnspan = 2,padx = 10, pady = 5, sticky = "W")
     x_name.place(row =0 , column = 0)
     y_name.place(row = 0, column = 1)
 
-    scatterplot_button.grid(row = 4, column = 0, pady = 10)
-    hist_button.grid(row = 4, column = 1, pady = 10)
-    clear_button.grid(row = 4, column = 2, pady = 10)
+    scatterplot_button.grid(row = 8, column = 0, pady = 10)
+    hist_button.grid(row = 8, column = 1, pady = 10)
+    clear_button.grid(row = 8, column = 2, pady = 10)
     
     root.mainloop()
