@@ -5,8 +5,8 @@ from modules import postprocess as pp
 from modules import analysis
 
 class labelledFields:
-    def __init__(self, frame, label, width = 10, height = 10, txtwidth = 10, padding = "3 3 12 12"):
-        self.Frame = ttk.Frame(frame, width = width, height = height, padding = padding)
+    def __init__(self, frame, label, height = 10, txtwidth = 10, padding = "3 3 12 12"):
+        self.Frame = ttk.Frame(frame, height = height, padding = padding)
         self.Label = ttk.Label(self.Frame, text = label)
         self.Field = ttk.Entry(self.Frame, width = txtwidth)
     def place(self, row, column, columnspan=1, txtboxspan = 1):
@@ -25,8 +25,8 @@ class fileDialogButtons (labelledFields):
     """
     Object variables area: title, filetypes, Button, and txtboxspan
     """
-    def __init__(self, frame, label,  title = "Select a file", filetypes=(("Text files","*.txt"), ("All files","*.*")), width = 5, height = 5, txtwidth = 10, padding = "3 3 12 12"):
-        labelledFields.__init__(self, frame, label, width = width, height = height, txtwidth = txtwidth, padding = padding)
+    def __init__(self, frame, label,  title = "Select a file", filetypes=(("Text files","*.txt"), ("All files","*.*")), height = 5, txtwidth = 10, padding = "3 3 12 12"):
+        labelledFields.__init__(self, frame, label, height = height, txtwidth = txtwidth, padding = padding)
         self.title = title
         self.filetypes = filetypes
         self.Button = ttk.Button (self.Frame, text = "...", command = self.open_file, width = 2)
@@ -70,7 +70,7 @@ class dropdownMenus:
         self.Menu['values'] = options
         self.clicked.set(options[0])
     def place(self, row, column, columnspan = 1, boxspan = 1):
-        self.Frame.grid(row = row, column = column, columnspan = columnspan)
+        self.Frame.grid(row = row, column = column, columnspan = columnspan, sticky = "W")
         self.Label.grid(row = 0, column = 0)
         self.Menu.grid(row = 0, column = 1, columnspan = boxspan)
     def get(self):
@@ -168,7 +168,7 @@ if __name__ == '__main__':
     n.add(f2, text = 'Plot')
     # Tab 1 widgets
     titleLabel1 = ttk.Label(f1, text = "Pulse height and pulse shape discrimination analysis - charge comparison method")
-    inFile1 = fileDialogButtons(f1, label = 'Input data:', filetypes = (("DAT files","*.dat"), ("TRACES files", "*.traces"),("All files","*.*")),width = 100, txtwidth = 125)
+    inFile1 = fileDialogButtons(f1, label = 'Input data:', filetypes = (("DAT files","*.dat"), ("TRACES files", "*.traces"),("All files","*.*")),txtwidth = 69)
     multi = IntVar(value = 0)
     multi_checkbox = ttk.Checkbutton(f1, text = 'Choose folder instead?', command = lambda: multi_checkbox_command(multi.get()), variable = multi)
     sub_notebook = ttk.Notebook(f1)
@@ -177,23 +177,23 @@ if __name__ == '__main__':
     sub_notebook.add(meth1_frame, text = 'Qlong/Qshort')
     sub_notebook.add(meth2_frame, text = 'W2/(W1+W2)')
     
-    digitizer_box1 = dropdownMenus(meth1_frame, label = "Digitizer:", options = ("CAEN_10_bit", "CAEN_14_bit","PicoScope5444_V3"))
-    threshold_box1= labelledFields(meth1_frame, label = 'Threshold:')
+    digitizer_box1 = dropdownMenus(meth1_frame, width = 28, label = "Digitizer:", options = ("CAEN_10_bit", "CAEN_14_bit","PicoScope5444_V3"))
+    threshold_box1= labelledFields(meth1_frame, label = 'Threshold:', txtwidth = 29)
     digitizer_box1.Menu.bind('<<ComboboxSelected>>', func = lambda event: callback_digitizer_box(digitizer_box1, threshold_box1))
-    shift_back1 = labelledFields(meth1_frame, label = 'Pre-gate (ns):')
-    longGate_box = labelledFields(meth1_frame, label = 'Long Gate (ns):')
-    shortGate_box = labelledFields(meth1_frame, label = 'Short Gate (ns):')
-    analyse1 = ttk.Button(meth1_frame, text = 'Analyse', command = analyse_button1)
+    shift_back1 = labelledFields(meth1_frame, label = 'Pre-gate (ns):', txtwidth = 26)
+    longGate_box = labelledFields(meth1_frame, label = 'Long Gate (ns):', txtwidth = 25)
+    shortGate_box = labelledFields(meth1_frame, label = 'Short Gate (ns):', txtwidth = 24)
+    analyse1 = ttk.Button(meth1_frame, text = 'Analyse', command = analyse_button1, width = 39)
 
-    digitizer_box2 = dropdownMenus(meth2_frame, label = "Digitizer:", options = ("CAEN_10_bit", "CAEN_14_bit","PicoScope5444_V3"))
-    threshold_box2= labelledFields(meth2_frame, label = 'Threshold:')
+    digitizer_box2 = dropdownMenus(meth2_frame, width = 28, label = "Digitizer:", options = ("CAEN_10_bit", "CAEN_14_bit","PicoScope5444_V3"))
+    threshold_box2= labelledFields(meth2_frame, label = 'Threshold:', txtwidth = 29)
     digitizer_box2.Menu.bind('<<ComboboxSelected>>', func = lambda event: callback_digitizer_box(digitizer_box2, threshold_box2))
-    shift_back2 = labelledFields(meth2_frame, label = 'Pre-gate (ns):')
-    W1_box = labelledFields(meth2_frame, label = 'W1 (ns):')
-    delay_box = labelledFields(meth2_frame, label = 'Delay (ns):')
-    W2_box = labelledFields(meth2_frame, label = 'W2 (ns)')
-    allGate_box = labelledFields(meth2_frame, label = 'Gate (ns)')
-    analyse2 = ttk.Button(meth2_frame, text = 'Analyse', command = analyse_button2)
+    shift_back2 = labelledFields(meth2_frame, label = 'Pre-gate (ns):', txtwidth = 26)
+    W1_box = labelledFields(meth2_frame, label = 'W1 (ns):',txtwidth = 31)
+    delay_box = labelledFields(meth2_frame, label = 'Delay (ns):',txtwidth = 29)
+    W2_box = labelledFields(meth2_frame, label = 'W2 (ns)',txtwidth = 31)
+    allGate_box = labelledFields(meth2_frame, label = 'Gate (ns)',txtwidth = 30)
+    analyse2 = ttk.Button(meth2_frame, text = 'Analyse', command = analyse_button2, width = 39)
     # Tab 2 widgets
     titleLabel2 = ttk.Label(f2, text = "PSD scatterplot and histogram plotting")
     inFile2 = fileDialogButtons(f2, label = 'Input file:', txtwidth = 70)
@@ -206,7 +206,7 @@ if __name__ == '__main__':
     truncate = IntVar(value = 1)
     check_truncate = ttk.Checkbutton(range_controls, text = 'Truncate raw data to range?', variable = truncate)
     
-    spectrum_controls = ttk.LabelFrame(f2, text = 'Further histogram building controls')
+    spectrum_controls = ttk.LabelFrame(f2, text = 'Histogram building options')
     quantity = dropdownMenus(spectrum_controls, label = "Quantity:", options = ("Pulse Height", "PSD"))
     autobinning = dropdownMenus(spectrum_controls, width = 5, label = 'Auto-binning:', options = ("No", "Yes"))
     noOfBins = labelledFields(spectrum_controls, label = 'Number of bins:')
@@ -225,26 +225,26 @@ if __name__ == '__main__':
     # Place widgets
     n.grid(row = 0, column = 0)
     # Tab 1 widgets placement
-    titleLabel1.grid(row = 0, column = 0)
+    titleLabel1.grid(row = 0, column = 0, sticky = "W")
     inFile1.place(row = 1, column = 0, columnspan = 2)
-    multi_checkbox.grid(row = 1, column = 2)
-    sub_notebook.grid(row = 2, column = 0, pady = 20)
+    multi_checkbox.grid(row = 2, column = 0, sticky = "W")
+    sub_notebook.grid(row = 3, column = 0, pady = 20, sticky = "W")
 
-    digitizer_box1.place(row = 0, column = 0, columnspan = 2, boxspan = 2)
+    digitizer_box1.place(row = 0, column = 0, boxspan = 2)
     threshold_box1.place(row = 1, column = 0)
     shift_back1.place(row = 1, column = 1)
     longGate_box.place(row = 2, column = 0)
     shortGate_box.place(row = 2, column = 1)
-    analyse1.grid(row = 3, column = 0, columnspan = 2)
+    analyse1.grid(row = 0, column = 1, sticky = "W")
 
-    digitizer_box2.place(row = 0, column = 0, columnspan = 2)
+    digitizer_box2.place(row = 0, column = 0, boxspan = 2)
     threshold_box2.place(row = 1, column = 0)
     shift_back2.place(row = 1, column = 1)
     W1_box.place(row = 2, column = 0)
     W2_box.place(row = 2, column = 1)
     allGate_box.place(row = 3, column = 0)
     delay_box.place(row = 3, column = 1)
-    analyse2.grid(row = 4, column = 0, columnspan = 2)
+    analyse2.grid(row = 0, column = 1, sticky = "W")
     # Tab 2 widgets placement
     titleLabel2.grid(row = 0, column = 0, columnspan = 3, sticky = "W")
     inFile2.place(row = 1, column = 0, columnspan = 3)
