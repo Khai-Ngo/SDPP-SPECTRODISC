@@ -41,7 +41,7 @@ def density_scatter( x , y, xlow, xhigh, ylow, yhigh, ax = None, sort = True, bi
     Scatter plot colored by 2d histogram
     """
     if ax is None :
-        fig , ax = plt.subplots()
+        fig , ax = plt.subplots(figsize=(8, 6))
     data , x_e, y_e = np.histogram2d( x, y, bins = bins, density = True )
     z = interpn( ( 0.5*(x_e[1:] + x_e[:-1]) , 0.5*(y_e[1:]+y_e[:-1]) ) , data , np.vstack([x,y]).T , method = "splinef2d", bounds_error = False)
     #To be sure to plot all data
@@ -57,10 +57,9 @@ def density_scatter( x , y, xlow, xhigh, ylow, yhigh, ax = None, sort = True, bi
     for label in (ax.get_xticklabels()+ax.get_yticklabels()):
         label.set_fontsize(fontsize)
     # actual plotting
-    ax.scatter( x, y, c=z, s=0.05,cmap = 'rainbow')
+    ax.scatter( x, y, c=z, s=0.05,cmap = 'jet')
     norm = Normalize(vmin = np.min(z), vmax = np.max(z))
-    cbar = fig.colorbar(cm.ScalarMappable(norm = norm), ax=ax)
-    cbar.ax.set_ylabel('Density')
+    cbar = fig.colorbar(cm.ScalarMappable(norm = norm, cmap = 'jet'), ax=ax, spacing = 'proportional')
     ax.set_xlabel(xlabel, fontsize = fontsize)
     ax.set_ylabel(ylabel, fontsize = fontsize)
     # configure grid and minor ticks
