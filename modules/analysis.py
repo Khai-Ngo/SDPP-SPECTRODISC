@@ -48,7 +48,7 @@ def pulseAreaEJ276 (pulse, threshold, pregate, shortGate =60, longGate = 220):
     # perform integration
     shortInte = scipy.integrate.trapz (pulse[startIndex:stopShort+1], None, dx = 1.0) 
     longInte = scipy.integrate.trapz (pulse[startIndex:stopLong+1], None, dx = 1.0)
-    PSD = longInte/shortInte
+    PSD = (longInte-shortInte)/longInte
     return longInte, PSD
 def save(x, y, z, outPath):
     """
