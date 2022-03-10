@@ -123,28 +123,30 @@ def charge_checkbox_cmd(flag):
         charge_gate_box.disable()
     else:
         charge_gate_box.enable()
-def callback_digitizer_box(dropDownMenu, labelledField):
+def callback_digitizer_box(dropDownMenu, *labelledFields):
     if dropDownMenu.get() == 'PicoScope5444_V3':
-        labelledField.disable()
+        for field in labelledFields:
+            field.disable()
     else:
-        labelledField.enable()
+        for field in labelledFields:
+            field.enable()
 def analyse_button():
+    global charge_chbx_bool
     outFile = filedialog.asksaveasfilename(initialdir = "/", title = "Save output to", defaultextension = ".txt",filetypes=(("Text files","*.txt"), ("All files","*.*")))
     fname = inFile1.get()
+    polarity = True if polarity_box.get() == 'Positive' else False
+    shift = int(shift_back.get())
     short = int(shortGate_box.get())
     long = int(longGate_box.get())
-    thres = int(threshold_box.get())
-    shift = int(shift_back.get())
-    baseline = int(baseline_box.get())
-    polarity = True if polarity_box.get() == 'Positive' else False
+    qGate = long if charge_chbx_bool.get() else int(charge_gate_box.get())
     if digitizer_box.get() == "CAEN_10_bit":
-        analysis.CAEN(fname = fname, output = outFile, mode = 1, threshold = thres, pregate = shift, shortGate = short, longGate = long)
+        analysis.CAEN(fname = fname, output = outFile, baseline = int(baseline_box.get()), polarity = polarity, threshold = int(threshold_box.get()), pregate = shift, shortGate = short, longGate = long, qGate = qGate)
     elif digitizer_box.get() == "CAEN_14_bit":
         # divide by 2 because sampling frequency = 500 MHz (CAEN DT5730)
-        analysis.CAEN(fname = fname, output = outFile, mode = 1, threshold = thres, pregate = int(shift/2), shortGate = int(short/2), longGate = int(long/2))
+        analysis.CAEN(fname = fname, output = outFile, baseline = int(baseline_box.get()), polarity = polarity, threshold = int(threshold_box.get()), pregate = int(shift/2), shortGate = int(short/2), longGate = int(long/2), qGate = int(qGate/2))
     else: #last option is obviously "PicoScope5444_V3"
         # divide by 8 because sampling frequency = 128 MHz
-        analysis.Pico(fname = fname, output = outFile, mode = 1, pregate = int(shift/8), shortGate = int(short/8), longGate = int(long/8))
+        analysis.Pico(fname = fname, output = outFile, pregate = int(shift/8), shortGate = int(short/8), longGate = int(long/8), qGate = int(qGate/8))
 if __name__ == '__main__':
     # Create the window
     root = Tk()
@@ -166,7 +168,7 @@ if __name__ == '__main__':
     sub_frame = ttk.Frame(f1)
     digitizer_box = dropdownMenus(sub_frame, width = 28, label = "Digitizer:", options = ("CAEN_10_bit", "CAEN_14_bit","PicoScope5444_V3"))
     threshold_box = labelledFields(sub_frame, label = 'Threshold:', txtwidth = 29)
-    digitizer_box.Menu.bind('<<ComboboxSelected>>', func = lambda event: callback_digitizer_box(digitizer_box, threshold_box))
+    digitizer_box.Menu.bind('<<ComboboxSelected>>', func = lambda event: callback_digitizer_box(digitizer_box, threshold_box, baseline_box))
     shift_back = labelledFields(sub_frame, label = 'Pre-gate (ns):', txtwidth = 26)
     baseline_box = labelledFields(sub_frame, label = 'Baseline (samples):', txtwidth = 22)
     polarity_box = dropdownMenus(sub_frame, width = 28, label = 'Polarity:', options =("Negative", "Positive"))
