@@ -117,43 +117,34 @@ def multi_checkbox_command(flag):
         inFile1.update_folder_input(title="Select a folder")
     else:
         inFile1.update_file_input(title = "Select a file", filetypes = (("DAT files","*.dat"), ("TRACES files", "*.traces"),("All files","*.*")))
+def charge_checkbox_cmd(flag):
+    global charge_gate_box
+    if flag:
+        charge_gate_box.disable()
+    else:
+        charge_gate_box.enable()
 def callback_digitizer_box(dropDownMenu, labelledField):
     if dropDownMenu.get() == 'PicoScope5444_V3':
         labelledField.disable()
     else:
         labelledField.enable()
-def analyse_button1():
+def analyse_button():
     outFile = filedialog.asksaveasfilename(initialdir = "/", title = "Save output to", defaultextension = ".txt",filetypes=(("Text files","*.txt"), ("All files","*.*")))
     fname = inFile1.get()
     short = int(shortGate_box.get())
     long = int(longGate_box.get())
-    thres = int(threshold_box1.get()) if threshold_box1.get() else 0 # default value
-    shift = int(shift_back1.get())
-    if digitizer_box1.get() == "CAEN_10_bit":
+    thres = int(threshold_box.get())
+    shift = int(shift_back.get())
+    baseline = int(baseline_box.get())
+    polarity = True if polarity_box.get() == 'Positive' else False
+    if digitizer_box.get() == "CAEN_10_bit":
         analysis.CAEN(fname = fname, output = outFile, mode = 1, threshold = thres, pregate = shift, shortGate = short, longGate = long)
-    elif digitizer_box1.get() == "CAEN_14_bit":
+    elif digitizer_box.get() == "CAEN_14_bit":
         # divide by 2 because sampling frequency = 500 MHz (CAEN DT5730)
         analysis.CAEN(fname = fname, output = outFile, mode = 1, threshold = thres, pregate = int(shift/2), shortGate = int(short/2), longGate = int(long/2))
     else: #last option is obviously "PicoScope5444_V3"
         # divide by 8 because sampling frequency = 128 MHz
         analysis.Pico(fname = fname, output = outFile, mode = 1, pregate = int(shift/8), shortGate = int(short/8), longGate = int(long/8))
-def analyse_button2():
-    outFile = filedialog.asksaveasfilename(initialdir = "/", title = "Save output to", defaultextension = ".txt",filetypes=(("Text files","*.txt"), ("All files","*.*")))
-    fname = inFile1.get()
-    W1 = int(W1_box.get())
-    W2 = int(W2_box.get())
-    delay = int(delay_box.get())
-    thres = int(threshold_box2.get()) if threshold_box2.get() else 0 #defaut value
-    shift = int(shift_back2.get())
-    allGate = int(allGate_box.get())
-    if digitizer_box2.get() == "CAEN_10_bit":
-        analysis.CAEN(fname = fname, output = outFile, mode = 2, threshold = thres, pregate = shift, allGate = allGate, W1 = W1, W2 = W2, delay = delay)
-    elif digitizer_box2.get() == "CAEN_14_bit":
-        # divide by 2 because sampling frequency = 500 MHz (CAEN DT5730)
-        analysis.CAEN(fname =fname, output = outFile, mode = 2, threshold = thres, pregate = int(shift/2), allGate = int(allGate/2), W1 = int(W1/2), W2 = int(W2/2), delay = int(delay/2))
-    else: #last option is obviously "PicoScope5444_V3"
-        # divide by 8 because sampling frequency = 128 MHz
-        analysis.Pico(fname = fname, output = outFile, mode = 2, pregate = int(shift/8), allGate = int(allGate/8), W1 = int(W1/8), W2 = int(W2/8), delay = int(delay/8))
 if __name__ == '__main__':
     # Create the window
     root = Tk()
@@ -171,29 +162,21 @@ if __name__ == '__main__':
     inFile1 = fileDialogButtons(f1, label = 'Input data:', filetypes = (("DAT files","*.dat"), ("TRACES files", "*.traces"),("All files","*.*")),txtwidth = 69)
     multi = IntVar(value = 0)
     multi_checkbox = ttk.Checkbutton(f1, text = 'Choose folder instead?', command = lambda: multi_checkbox_command(multi.get()), variable = multi)
-    sub_notebook = ttk.Notebook(f1)
-    meth1_frame = ttk.Frame(sub_notebook)
-    meth2_frame = ttk.Frame(sub_notebook)
-    sub_notebook.add(meth1_frame, text = 'Qlong/Qshort')
-    sub_notebook.add(meth2_frame, text = 'W2/(W1+W2)')
-    
-    digitizer_box1 = dropdownMenus(meth1_frame, width = 28, label = "Digitizer:", options = ("CAEN_10_bit", "CAEN_14_bit","PicoScope5444_V3"))
-    threshold_box1= labelledFields(meth1_frame, label = 'Threshold:', txtwidth = 29)
-    digitizer_box1.Menu.bind('<<ComboboxSelected>>', func = lambda event: callback_digitizer_box(digitizer_box1, threshold_box1))
-    shift_back1 = labelledFields(meth1_frame, label = 'Pre-gate (ns):', txtwidth = 26)
-    longGate_box = labelledFields(meth1_frame, label = 'Long Gate (ns):', txtwidth = 25)
-    shortGate_box = labelledFields(meth1_frame, label = 'Short Gate (ns):', txtwidth = 24)
-    analyse1 = ttk.Button(meth1_frame, text = 'Analyse', command = analyse_button1, width = 39)
 
-    digitizer_box2 = dropdownMenus(meth2_frame, width = 28, label = "Digitizer:", options = ("CAEN_10_bit", "CAEN_14_bit","PicoScope5444_V3"))
-    threshold_box2= labelledFields(meth2_frame, label = 'Threshold:', txtwidth = 29)
-    digitizer_box2.Menu.bind('<<ComboboxSelected>>', func = lambda event: callback_digitizer_box(digitizer_box2, threshold_box2))
-    shift_back2 = labelledFields(meth2_frame, label = 'Pre-gate (ns):', txtwidth = 26)
-    W1_box = labelledFields(meth2_frame, label = 'W1 (ns):',txtwidth = 31)
-    delay_box = labelledFields(meth2_frame, label = 'Delay (ns):',txtwidth = 29)
-    W2_box = labelledFields(meth2_frame, label = 'W2 (ns)',txtwidth = 31)
-    allGate_box = labelledFields(meth2_frame, label = 'Gate (ns)',txtwidth = 30)
-    analyse2 = ttk.Button(meth2_frame, text = 'Analyse', command = analyse_button2, width = 39)
+    sub_frame = ttk.Frame(f1)
+    digitizer_box = dropdownMenus(sub_frame, width = 28, label = "Digitizer:", options = ("CAEN_10_bit", "CAEN_14_bit","PicoScope5444_V3"))
+    threshold_box = labelledFields(sub_frame, label = 'Threshold:', txtwidth = 29)
+    digitizer_box.Menu.bind('<<ComboboxSelected>>', func = lambda event: callback_digitizer_box(digitizer_box, threshold_box))
+    shift_back = labelledFields(sub_frame, label = 'Pre-gate (ns):', txtwidth = 26)
+    baseline_box = labelledFields(sub_frame, label = 'Baseline (samples):', txtwidth = 22)
+    polarity_box = dropdownMenus(sub_frame, width = 28, label = 'Polarity:', options =("Negative", "Positive"))
+    longGate_box = labelledFields(sub_frame, label = 'Long Gate (ns):', txtwidth = 25)
+    shortGate_box = labelledFields(sub_frame, label = 'Short Gate (ns):', txtwidth = 24)
+    charge_gate_box = labelledFields(sub_frame, label = 'Total Charge (ns):', txtwidth = 23)
+    charge_chbx_bool = IntVar(value = 0)
+    charge_checkbox = ttk.Checkbutton(sub_frame, text = 'Same as long gate?', command = lambda: charge_checkbox_cmd(charge_chbx_bool.get()), variable = charge_chbx_bool)
+    analyse = ttk.Button(sub_frame, text = 'Analyse', command = analyse_button, width = 39)
+
     # Tab 2 widgets
     titleLabel2 = ttk.Label(f2, text = "PSD scatterplot and histogram plotting")
     inFile2 = fileDialogButtons(f2, label = 'Input file:', txtwidth = 70)
@@ -228,23 +211,19 @@ if __name__ == '__main__':
     titleLabel1.grid(row = 0, column = 0, sticky = "W")
     inFile1.place(row = 1, column = 0, columnspan = 2)
     multi_checkbox.grid(row = 2, column = 0, sticky = "W")
-    sub_notebook.grid(row = 3, column = 0, pady = 20, sticky = "W")
+    sub_frame.grid(row = 3, column = 0, sticky = "W")
 
-    digitizer_box1.place(row = 0, column = 0, boxspan = 2)
-    threshold_box1.place(row = 1, column = 0)
-    shift_back1.place(row = 1, column = 1)
-    longGate_box.place(row = 2, column = 0)
-    shortGate_box.place(row = 2, column = 1)
-    analyse1.grid(row = 0, column = 1, sticky = "W")
-
-    digitizer_box2.place(row = 0, column = 0, boxspan = 2)
-    threshold_box2.place(row = 1, column = 0)
-    shift_back2.place(row = 1, column = 1)
-    W1_box.place(row = 2, column = 0)
-    W2_box.place(row = 2, column = 1)
-    allGate_box.place(row = 3, column = 0)
-    delay_box.place(row = 3, column = 1)
-    analyse2.grid(row = 0, column = 1, sticky = "W")
+    digitizer_box.place(row = 0, column = 0)
+    threshold_box.place(row = 1, column = 0)
+    shift_back.place(row = 1, column = 1)
+    baseline_box.place(row = 2, column = 0)
+    polarity_box.place(row = 2, column = 1)
+    longGate_box.place(row = 3, column = 0)
+    shortGate_box.place(row = 3, column = 1)
+    charge_gate_box.place(row = 4, column = 0)
+    charge_checkbox.grid(row = 4, column = 1, sticky = "W")
+    analyse.grid(row = 0, column = 1, sticky = "W")
+    
     # Tab 2 widgets placement
     titleLabel2.grid(row = 0, column = 0, columnspan = 3, sticky = "W")
     inFile2.place(row = 1, column = 0, columnspan = 3)
