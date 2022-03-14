@@ -15,6 +15,8 @@ class labelledFields:
         self.Field.grid(row = 0, column = 1, columnspan = txtboxspan)
     def get(self):
         return self.Field.get()
+    def set (self, text):
+        self.Field.insert(0, text)
     def clear(self):
         self.Field.delete(0, END)
     def disable(self):
@@ -77,14 +79,17 @@ class dropdownMenus:
         return self.clicked.get()
 def plotScatterplot():
     global truncate
-    x, y = pp.readExport(inFile2.get())
+    if row_no.get() == 'inf' or row_no.get() == 'INF':
+        max_rows = None
+    else: max_rows = int(row_no.get())
+    x, y = pp.readExport(inFile2.get(), max_rows = max_rows)
     if a_const.get() and b_const.get():
         a = float(a_const.get())
         b = float(b_const.get())
         x = a*x + b
     if truncate.get():
         x, y = pp.dataTruncator(x, y, xlow = float(Min_x.get()), xhigh = float(Max_x.get()), ylow = float(Min_y.get()), yhigh = float(Max_y.get()))
-    pp.density_scatter(x, y, xlow = float(Min_x.get()), xhigh = float(Max_x.get()), ylow = float(Min_y.get()), yhigh = float(Max_y.get()), bins = [1000,1000], xlabel = x_name.get(), ylabel = y_name.get())
+    ax = pp.density_scatter(x, y, xlow = float(Min_x.get()), xhigh = float(Max_x.get()), ylow = float(Min_y.get()), yhigh = float(Max_y.get()), bins = [1000,1000], xlabel = x_name.get(), ylabel = y_name.get()) 
 def plotHist():
     global truncate
     filename = filedialog.asksaveasfilename(initialdir = "/", title = "Save histogram to", defaultextension = ".txt",filetypes=(("Text files","*.txt"), ("All files","*.*")))
@@ -97,9 +102,9 @@ def plotHist():
         x, y = pp.dataTruncator(x, y, xlow = float(Min_x.get()), xhigh = float(Max_x.get()), ylow = float(Min_y.get()), yhigh = float(Max_y.get()))    
     auto = True if autobinning.get() == 'Yes' else False
     if quantity.get() == 'Pulse Height':
-        pp.buildHist(x, filename, minVal = float(Min_x.get()), maxVal = float(Max_x.get()), noOfBins = int(noOfBins.get()), auto = auto, plot = True, save = True)
+        ax = pp.buildHist(x, filename, minVal = float(Min_x.get()), maxVal = float(Max_x.get()), noOfBins = int(noOfBins.get()), auto = auto, plot = True, save = True)
     else:
-        pp.buildHist(y, filename, minVal = float(Min_y.get()), maxVal = float(Max_y.get()), noOfBins = int(noOfBins.get()), auto = auto, plot = True, save = True)        
+        ax = pp.buildHist(y, filename, minVal = float(Min_y.get()), maxVal = float(Max_y.get()), noOfBins = int(noOfBins.get()), auto = auto, plot = True, save = True)        
 def clear_all():
     inFile2.clear()
     Min_x.clear()
@@ -190,6 +195,7 @@ if __name__ == '__main__':
     Max_y = labelledFields(range_controls, label = 'Maximum PSD:', txtwidth = 23)
     truncate = IntVar(value = 1)
     check_truncate = ttk.Checkbutton(range_controls, text = 'Truncate raw data to range?', variable = truncate)
+    row_no = labelledFields(range_controls, label = 'Lines to read:', txtwidth = 25)
     
     spectrum_controls = ttk.LabelFrame(f2, text = 'Histogram building options')
     quantity = dropdownMenus(spectrum_controls, label = "Quantity:", options = ("Pulse Height", "PSD"))
@@ -236,6 +242,8 @@ if __name__ == '__main__':
     Min_y.place(row = 1, column = 0)
     Max_y.place(row = 1, column = 1)
     check_truncate.grid(row =2, column =0, columnspan = 2, pady = 5, sticky = "W")
+    row_no.place(row = 2, column = 1)
+    row_no.set('1200000')
     
     spectrum_controls.grid(row = 3, column = 0, columnspan = 3, padx = 2 ,pady = 10, sticky = "W")
     quantity.place(row = 0, column = 0)

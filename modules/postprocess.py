@@ -33,9 +33,12 @@ def buildHist(arr, filename, minVal, maxVal, noOfBins, auto = False, plot = Fals
             f.write('Value\tCounts\n')
             for e, val in zip(bin_edges[:-1], hist):
                 f.write('%s\t%s\n'%(e, val))
+    ax = None
     if plot:
-        plt.plot(bin_edges[:-1], hist)
+        fig , ax = plt.subplots(figsize=(8, 6))
+        ax.plot(bin_edges[:-1], hist)
         plt.show()
+    return ax
 def density_scatter( x , y, xlow, xhigh, ylow, yhigh, ax = None, sort = True, bins = 20, xlabel = 'x', ylabel = 'y', fontsize = 18)   :
     """
     Scatter plot colored by 2d histogram
