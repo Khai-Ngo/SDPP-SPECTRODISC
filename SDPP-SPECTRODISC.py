@@ -105,17 +105,10 @@ def plotHist():
         ax = pp.buildHist(x, filename, minVal = float(Min_x.get()), maxVal = float(Max_x.get()), noOfBins = int(noOfBins.get()), auto = auto, plot = True, save = True)
     else:
         ax = pp.buildHist(y, filename, minVal = float(Min_y.get()), maxVal = float(Max_y.get()), noOfBins = int(noOfBins.get()), auto = auto, plot = True, save = True)        
-def clear_all():
-    inFile2.clear()
-    Min_x.clear()
-    Max_x.clear()
-    Min_y.clear()
-    Max_y.clear()
-    x_name.clear()
-    y_name.clear()
-    a_const.clear()
-    b_const.clear()
-    noOfBins.clear()
+def write_time_trace():
+    outputPath = filedialog.asksaveasfilename(initialdir = "/", title = "Save histogram to", defaultextension = ".txt",filetypes=(("Text files","*.txt"), ("All files","*.*")))
+    t = pp.readTime(inFile2.get())
+    pp.timeTrace (t, outputPath)
 def multi_checkbox_command(flag):
     global inFile1
     if flag:
@@ -212,7 +205,7 @@ if __name__ == '__main__':
     
     scatterplot_button = ttk.Button(f2, text = 'Plot scatterplot', command = plotScatterplot)
     hist_button = ttk.Button(f2, text = 'Plot histogram', command = plotHist)
-    clear_button = ttk.Button (f2, text = 'Clear all', command = clear_all)
+    time_button = ttk.Button (f2, text = 'Time trace', command = write_time_trace)
     # Place widgets
     n.grid(row = 0, column = 0)
     # Tab 1 widgets placement
@@ -260,6 +253,6 @@ if __name__ == '__main__':
 
     scatterplot_button.grid(row = 8, column = 0, pady = 10)
     hist_button.grid(row = 8, column = 1, pady = 10)
-    clear_button.grid(row = 8, column = 2, pady = 10)
+    time_button.grid(row = 8, column = 2, pady = 10)
     
     root.mainloop()

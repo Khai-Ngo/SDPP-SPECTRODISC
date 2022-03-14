@@ -11,6 +11,10 @@ def readExport (filepath, max_rows = None):
         x.append(float(line.split()[0]))
         y.append(float(line.split()[1]))
     return np.array(x), np.array(y)
+def readTime(inputPath):
+    with open(inputPath) as f:
+        lines = f.readlines()
+    return [float(line.split()[2]) for line in lines]
 def dataTruncator (x, y, xlow = -np.inf, xhigh = np.inf, ylow = -np.inf, yhigh = np.inf, numPoint = np.inf):
     xret = []
     yret = []
@@ -71,3 +75,16 @@ def density_scatter( x , y, xlow, xhigh, ylow, yhigh, ax = None, sort = True, bi
     ax.minorticks_on()
     plt.show()
     return ax
+def timeTrace (timeArr, outputPath):
+    t_elasped_microsec = 0
+    reset = 0
+    t_elasped_sec = []
+    for timeStamp in timeArr:
+        currentTimeStamp = timeStamp + reset - timeArr[0]
+        if currentTimeStamp < t_elasped_microsec:
+            reset += 17179869.19
+            t_elasped_microsec = currentTimeStamp + 17179869.19
+        else: 
+            t_elasped_microsec = currentTimeStamp
+        t_elasped_sec.append(t_elasped_microsec / 1000000.0)
+    ax = buildHist(t_elasped_sec, outputPath, minVal = 0, maxVal = int(t_elasped_sec[-1])+1, noOfBins = int(t_elasped_sec[-1])+1, plot = True)
