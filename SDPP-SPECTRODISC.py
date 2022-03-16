@@ -236,12 +236,13 @@ if __name__ == '__main__':
     Max_y.place(row = 1, column = 1)
     check_truncate.grid(row =2, column =0, columnspan = 2, pady = 5, sticky = "W")
     row_no.place(row = 2, column = 1)
-    row_no.set('1200000')
+    row_no.set('inf')
     
     spectrum_controls.grid(row = 3, column = 0, columnspan = 3, padx = 2 ,pady = 10, sticky = "W")
     quantity.place(row = 0, column = 0)
     autobinning.place(row = 0, column =1)
     noOfBins.place(row=0, column =2)
+    noOfBins.set('1000')
     
     scaling.grid(row = 4,column = 0, pady = 5, sticky = "W")
     a_const.place(row = 0, column = 0)
